@@ -7,4 +7,7 @@ bigquery_datasets = [{
   }]
   }
 ]
-buckets = []
+buckets = [{
+  bucket_name = "ml-spez-ccai-landing"
+  location = "US"
+}]
