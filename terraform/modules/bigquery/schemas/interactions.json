@@ -1,0 +1,57 @@
+[
+    {
+      "name": "project_id",
+      "type": "STRING",
+      "description": "The project ID."
+    },
+    {
+      "name": "agent_id",
+      "type": "STRING",
+      "description": "The agent ID."
+    },
+    {
+      "name": "conversation_name",
+      "type": "STRING",
+      "description": "The fully qualified resource name for the session."
+    },
+    {
+      "name": "turn_position",
+      "type": "INTEGER",
+      "description": "The conversational turn number."
+    },
+    {
+      "name": "request_time",
+      "type": "TIMESTAMP",
+      "description": "The time of the conversational turn."
+    },
+    {
+      "name": "language_code",
+      "type": "STRING",
+      "description": "The language tag."
+    },
+    {
+      "name": "request",
+      "type": "JSON",
+      "description": "The detect intent request."
+    },
+    {
+      "name": "response",
+      "type": "JSON",
+      "description": "The detect intent response."
+    },
+    {
+      "name": "partial_responses",
+      "type": "JSON",
+      "description": "Partial responses if applicable."
+    },
+    {
+      "name": "derived_data",
+      "type": "JSON",
+      "description": "Additional metadata for this conversational turn."
+    },
+    {
+      "name": "conversation_signals",
+      "type": "JSON",
+      "description": "NLU related analytics data."
+    }
+  ]
