@@ -8,6 +8,6 @@ bigquery_datasets = [{
   }
 ]
 buckets = [{
-  bucket_name = "ml-spez-ccai-landing"
+  bucket_name = "csv-landing"
   location = "US"
 }]
