@@ -4,7 +4,7 @@ bigquery_datasets = [{
   region     = "US"
   table_definitions = [{
     table_id = "interactions"
-    }]
+  }]
   }
 ]
 buckets = []

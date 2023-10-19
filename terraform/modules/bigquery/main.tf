@@ -1,16 +1,16 @@
 # Create a BigQuery dataset in the specified project.
 resource "google_bigquery_dataset" "project_dataset" {
   # Specify the dataset ID, provided as an input variable.
-  dataset_id  = var.dataset_id
+  dataset_id = var.dataset_id
 
   # Add a description for the dataset.
   description = "This is the dataset for the various tables"
 
   # Set the location for the dataset, provided as an input variable.
-  location    = var.region
+  location = var.region
 
   # Set the project where the dataset will be created, provided as an input variable.
-  project     = var.project_id
+  project = var.project_id
 }
 
 # Create BigQuery tables within the dataset.
@@ -19,7 +19,7 @@ resource "google_bigquery_table" "dataset_tables" {
   description = "This creates the tables specified in the dataset"
 
   # Specify the dataset ID from the previously created dataset resource.
-  dataset_id  = google_bigquery_dataset.project_dataset.dataset_id
+  dataset_id = google_bigquery_dataset.project_dataset.dataset_id
 
   # Create an instance of the resource for each table definition in input variables.
   for_each = {
@@ -40,10 +40,10 @@ resource "google_bigquery_table" "dataset_tables" {
   }
 
   # Specify clustering fields for the table, if any.
-  clustering          = each.value.clustering_fields
+  clustering = each.value.clustering_fields
 
   # Define the schema for the table using a JSON file.
-  schema              = file("${path.module}/schemas/${each.value.table_id}.json")
+  schema = file("${path.module}/schemas/${each.value.table_id}.json")
 
   # Disable deletion protection for the table.
   deletion_protection = false
