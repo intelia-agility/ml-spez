@@ -9,6 +9,9 @@ enabled_apis = [
     }, {
     api_name = "Cloud Functions API"
     api_id   = "cloudfunctions.googleapis.com"
+  }, {
+    api_name = "Cloud Run API"
+    api_id = "run.googleapis.com"
   }
 ]
 bigquery_datasets = [{
