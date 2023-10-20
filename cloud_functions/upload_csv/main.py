@@ -1,10 +1,10 @@
 import functions_framework
 from google.cloud import bigquery
 
-# Construct a BigQuery client object
+# Construct a BigQuery client object.
 client = bigquery.Client()
 
-# Triggered by a change in a storage bucket
+# Triggered by a change in a storage bucket.
 @functions_framework.cloud_event
 def upload_csv(cloud_event):
     data = cloud_event.data
