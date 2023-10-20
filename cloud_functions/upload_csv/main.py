@@ -1,7 +1,7 @@
 import functions_framework
 from google.cloud import bigquery
 
-# Construct a BigQuery client object.
+# Construct a BigQuery client object
 client = bigquery.Client()
 
 # Triggered by a change in a storage bucket
