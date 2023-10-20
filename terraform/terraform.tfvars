@@ -3,9 +3,12 @@ enabled_apis = [
   {
     api_name = "Dialogflow API"
     api_id   = "dialogflow.googleapis.com"
-  },{
+    }, {
     api_name = "Vertex AI API"
     api_id   = "aiplatform.googleapis.com"
+    }, {
+    api_name = "Cloud Functions API"
+    api_id   = "cloudfunctions.googleapis.com"
   }
 ]
 bigquery_datasets = [{
