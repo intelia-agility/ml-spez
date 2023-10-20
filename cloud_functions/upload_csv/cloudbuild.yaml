@@ -15,5 +15,6 @@ steps:
   - --trigger-bucket=csv-landing-ml-spez-ccai
   - --runtime=python311
   - --env-vars-file=cloud_functions/upload_csv/.env.yaml
+  - --service-account=ml-spez@ml-spez-ccai.iam.gserviceaccount.com
 options:
   logging: CLOUD_LOGGING_ONLY
