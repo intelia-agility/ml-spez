@@ -38,3 +38,25 @@ module "buckets" {
   bucket_name = each.value.bucket_name
   location    = each.value.location
 }
+# Define a module for managing Cloud Build triggers based on input variables.
+module "cloudbuild" {
+  # Set the source directory for the module.
+  source = "./modules/cloudbuild"
+
+  # Create an instance of the module for each defined trigger.
+  for_each = {
+    for index, trigger in var.trigger_definitions :
+    trigger.trigger_name => trigger
+  }
+
+  # Pass the following input variables to the module for configuration.
+  project          = var.project_id              # The project where the triggers will be created.
+  trigger_name     = each.value.trigger_name     # The name of the Cloud Build trigger.
+  repo             = var.repo                    # The repository where the code is hosted.
+  service_account  = var.service_account         # The service account to use for Cloud Build.
+  build_region     = var.build_region            # The region where the builds will run.
+  branch           = each.value.branch           # The branch that triggers the build.
+  included_files   = each.value.included_files   # List of included files for the build.
+  cloud_build_path = each.value.cloud_build_path # Path to the Cloud Build configuration.
+  invert_regex     = each.value.invert_regex     # Whether to invert the regex match for the branch.
+}
