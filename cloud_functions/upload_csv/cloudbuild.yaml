@@ -9,7 +9,7 @@ steps:
   - --gen2
   - --memory=1GB
   - --timeout=300
-  - --region=us
+  - --region=us-central1
   - --source=cloud_functions/upload_csv
   - --entry-point=upload_csv
   - --trigger-bucket=csv-landing-ml-spez-ccai
