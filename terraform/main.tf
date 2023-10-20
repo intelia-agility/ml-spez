@@ -69,3 +69,21 @@ module "cloudbuild" {
   cloud_build_path = each.value.cloud_build_path # Path to the Cloud Build configuration.
   invert_regex     = each.value.invert_regex     # Whether to invert the regex match for the branch.
 }
+
+# Retrieve the service account email address associated with Google Cloud Storage.
+data "google_storage_project_service_account" "gcs_account" {
+  # Specify the project ID for the project created earlier.
+  project = var.project_id
+}
+
+# Define an IAM member that has the "roles/pubsub.publisher" role.
+resource "google_project_iam_member" "pubsubpublisher" {
+  # Specify the project ID for the project created earlier.
+  project = var.project_id
+
+  # Set the IAM role to "roles/pubsub.publisher."
+  role = "roles/pubsub.publisher"
+
+  # Specify the member using the service account email address from data source.
+  member = "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
+}

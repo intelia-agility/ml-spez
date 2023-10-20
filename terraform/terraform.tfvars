@@ -9,12 +9,12 @@ enabled_apis = [
     }, {
     api_name = "Cloud Functions API"
     api_id   = "cloudfunctions.googleapis.com"
-  }, {
+    }, {
     api_name = "Cloud Run API"
-    api_id = "run.googleapis.com"
-  }, {
+    api_id   = "run.googleapis.com"
+    }, {
     api_name = "Eventarc API"
-    api_id = "eventarc.googleapis.com"
+    api_id   = "eventarc.googleapis.com"
   }
 ]
 bigquery_datasets = [{
