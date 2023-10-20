@@ -24,3 +24,16 @@ variable "buckets" {
     location    = string
   }))
 }
+variable "repo" {}
+variable "service_account" {}
+variable "build_region" {}
+variable "trigger_definitions" {
+  description = "The configuration of the build triggers"
+  type = list(object({
+    trigger_name     = string
+    branch           = string
+    included_files   = string
+    cloud_build_path = string
+    invert_regex     = bool
+  }))
+}
