@@ -1,4 +1,13 @@
 project_id = "ml-spez-ccai"
+enabled_apis = [
+  {
+    api_name = "Dialogflow API"
+    api_id   = "dialogflow.googleapis.com"
+  },{
+    api_name = "Vertex AI API"
+    api_id   = "aiplatform.googleapis.com"
+  }
+]
 bigquery_datasets = [{
   dataset_id = "dialogflow_export"
   region     = "US"

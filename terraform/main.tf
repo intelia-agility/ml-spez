@@ -4,6 +4,15 @@ provider "google" {
   project = var.project_id
 }
 
+module "enabled_apis" {
+  # Set the source directory for the module.
+  source = "./modules/enabled_apis"
+  # Set the project to the value provided in the input variable.
+  project_id = var.project_id
+  # Set the enabled_apis to the value provided in the input variable.
+  enabled_apis = var.enabled_apis
+}
+
 # Create a module for managing BigQuery datasets and tables.
 module "bigquery" {
   # Set the source directory for the module.

@@ -2,6 +2,13 @@ variable "project_id" {
   description = "The project id"
   type        = string
 }
+variable "enabled_apis" {
+  description = "The list of API's to enable"
+  type = list(object({
+    api_name = string
+    api_id   = string
+  }))
+}
 variable "bigquery_datasets" {
   description = "The list of BigQuery datasets along with Table definitions"
   type = list(object({
