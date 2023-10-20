@@ -31,7 +31,7 @@ build_region    = "australia-southeast1"
 trigger_definitions = [{
   trigger_name     = "Upload-CSV"
   branch           = ".*"
-  included_files   = "cloud_functions/upload_csv**"
+  included_files   = "cloud_functions/upload_csv/**"
   cloud_build_path = "cloud_functions/upload_csv/cloudbuild.yaml"
   invert_regex     = false
 }]
