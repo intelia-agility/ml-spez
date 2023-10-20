@@ -1,0 +1,19 @@
+steps:
+- id: 'deploy cloud function upload_csv'
+  name: 'gcr.io/cloud-builders/gcloud'
+  args:
+  - functions
+  - deploy
+  - upload_csv
+  - --quiet
+  - --gen2
+  - --memory=1GB
+  - --timeout=300
+  - --region=us-central1
+  - --source=cloud_functions/upload_csv
+  - --entry-point=upload_csv
+  - --trigger-bucket=csv-landing-ml-spez-ccai
+  - --runtime=python311
+  - --env-vars-file=cloud_functions/upload_csv/.env.yaml
+options:
+  logging: CLOUD_LOGGING_ONLY
