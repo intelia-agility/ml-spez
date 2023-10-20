@@ -5,8 +5,13 @@ bigquery_datasets = [{
   table_definitions = [{
     table_id = "interactions"
   }]
-  }
-]
+  }, {
+  dataset_id = "linkedin_kaggle"
+  region     = "US"
+  table_definitions = [{
+    table_id = "job_postings"
+  }]
+}]
 buckets = [{
   bucket_name = "csv-landing"
   location    = "US"

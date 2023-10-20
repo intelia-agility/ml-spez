@@ -1,0 +1,137 @@
+[
+    {
+      "name": "job_id",
+      "type": "INT64",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "company_id",
+      "type": "INT64",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "title",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "description",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "max_salary",
+      "type": "FLOAT64",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "med_salary",
+      "type": "FLOAT64",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "min_salary",
+      "type": "FLOAT64",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "pay_period",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "formatted_work_type",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "location",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "applies",
+      "type": "FLOAT64",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "original_listed_time",
+      "type": "TIMESTAMP",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "remote_allowed",
+      "type": "FLOAT64",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "views",
+      "type": "FLOAT64",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "job_posting_url",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "application_url",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "application_type",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "expiry",
+      "type": "TIMESTAMP",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "closed_time",
+      "type": "TIMESTAMP",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "formatted_experience_level",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "skills_desc",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "listed_time",
+      "type": "TIMESTAMP",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "posting_domain",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "sponsored",
+      "type": "INT64",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "work_type",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "currency",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "compensation_type",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    }
+  ]
