@@ -56,7 +56,7 @@
     },
     {
       "name": "original_listed_time",
-      "type": "TIMESTAMP",
+      "type": "STRING",
       "mode": "NULLABLE"
     },
     {
@@ -86,12 +86,12 @@
     },
     {
       "name": "expiry",
-      "type": "TIMESTAMP",
+      "type": "STRING",
       "mode": "NULLABLE"
     },
     {
       "name": "closed_time",
-      "type": "TIMESTAMP",
+      "type": "STRING",
       "mode": "NULLABLE"
     },
     {
@@ -106,7 +106,7 @@
     },
     {
       "name": "listed_time",
-      "type": "TIMESTAMP",
+      "type": "STRING",
       "mode": "NULLABLE"
     },
     {
