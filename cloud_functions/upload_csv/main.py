@@ -17,7 +17,9 @@ def upload_csv(cloud_event):
         table_id = project_id + "." + dataset_id + "."+ table_name
         job_config = bigquery.LoadJobConfig(
             skip_leading_rows=1,
-            source_format=bigquery.SourceFormat.CSV
+            source_format=bigquery.SourceFormat.CSV,
+            allow_jagged_rows = True,
+            allow_quoted_newlines = True
             )
         load_job = client.load_table_from_uri(
             uri, table_id, job_config=job_config
