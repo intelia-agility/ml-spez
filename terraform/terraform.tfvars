@@ -15,6 +15,9 @@ enabled_apis = [
     }, {
     api_name = "Eventarc API"
     api_id   = "eventarc.googleapis.com"
+  }, {
+    api_name = "BigQuery Data Transfer API"
+    api_id   = "bigquerydatatransfer.googleapis.com"
   }
 ]
 bigquery_datasets = [{
