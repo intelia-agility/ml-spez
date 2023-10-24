@@ -15,7 +15,7 @@ enabled_apis = [
     }, {
     api_name = "Eventarc API"
     api_id   = "eventarc.googleapis.com"
-  }, {
+    }, {
     api_name = "BigQuery Data Transfer API"
     api_id   = "bigquerydatatransfer.googleapis.com"
   }
@@ -31,6 +31,27 @@ bigquery_datasets = [{
   region     = "US"
   table_definitions = [{
     table_id = "job_postings"
+    },
+    {
+      table_id = "job_skills"
+    },
+    {
+      table_id = "job_industries"
+    },
+    {
+      table_id = "benefits"
+    },
+    {
+      table_id = "companies"
+    },
+    {
+      table_id = "company_industries"
+    },
+    {
+      table_id = "company_specialities"
+    },
+    {
+      table_id = "employee_counts"
   }]
 }]
 buckets = [{
