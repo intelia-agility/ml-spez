@@ -7,7 +7,7 @@ steps:
   - upload_csv
   - --quiet
   - --gen2
-  - --memory=2GB
+  - --memory=4GB
   - --timeout=300
   - --region=us-central1
   - --source=cloud_functions/upload_csv
