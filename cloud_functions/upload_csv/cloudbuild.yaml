@@ -13,7 +13,7 @@ steps:
   - --source=cloud_functions/upload_csv
   - --entry-point=upload_csv
   - --trigger-bucket=csv-landing-ml-spez-ccai
-  - --env-vars-file=.env.yaml
+  - --env-vars-file=cloud_functions/upload_csv/.env.yaml
   - --runtime=python311
   - --service-account=ml-spez@ml-spez-ccai.iam.gserviceaccount.com
 options:
