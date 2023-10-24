@@ -1,12 +1,12 @@
 [
     {
       "name": "job_id",
-      "type": "INT64",
+      "type": "STRING",
       "mode": "NULLABLE"
     },
     {
       "name": "company_id",
-      "type": "INT64",
+      "type": "STRING",
       "mode": "NULLABLE"
     },
     {
