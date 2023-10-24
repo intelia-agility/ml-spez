@@ -13,8 +13,9 @@ def upload_csv(cloud_event):
     uri = "gs://"+data["bucket"]+"/"+data["name"]
     project_id = os.environ.get("PROJECT_ID")
     dataset_id = os.environ.get("DATASET_ID")
+    table_name = file_name.split(".")[0]
     if int(data["size"])>0 and file_name and file_name != "":
-        table_id = project_id + "." + dataset_id + "."+ file_name
+        table_id = project_id + "." + dataset_id + "."+ table_name
         job_config = bigquery.LoadJobConfig(
             skip_leading_rows=1,
             source_format=bigquery.SourceFormat.CSV
