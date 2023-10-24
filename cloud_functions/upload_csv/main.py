@@ -1,4 +1,5 @@
 import functions_framework
+import os
 from google.cloud import bigquery
 
 # Construct a BigQuery client object.
@@ -8,18 +9,15 @@ client = bigquery.Client()
 @functions_framework.cloud_event
 def upload_csv(cloud_event):
     data = cloud_event.data
-    print(data)
-    '''
-    file_paths = data["name"].split("/")
-    if int(data["size"])>0 and len(file_paths)>1:
-        table_name = file_paths[-2]
-        table_id = "ap-exec-dashboard-poc.looker_dashboards."+table_name
-        print("Table id is {}".format(table_id))
-        uri = "gs://"+data["bucket"]+"/"+data["name"]
+    file_name = data["name"].split("/")[-1]
+    uri = "gs://"+data["bucket"]+"/"+data["name"]
+    project_id = os.environ.get("PROJECT_ID")
+    dataset_id = os.environ.get("DATASET_ID")
+    if int(data["size"])>0 and file_name and file_name != "":
+        table_id = project_id + "." + dataset_id + "."+ file_name
         job_config = bigquery.LoadJobConfig(
             skip_leading_rows=1,
-            source_format=bigquery.SourceFormat.CSV,
-            max_bad_records=100
+            source_format=bigquery.SourceFormat.CSV
             )
         load_job = client.load_table_from_uri(
             uri, table_id, job_config=job_config
@@ -29,7 +27,4 @@ def upload_csv(cloud_event):
 
         destination_table = client.get_table(table_id)  # Make an API request.
         print("Total {} rows in table".format(destination_table.num_rows))
-    else:
-        print("No table name present")
-    print("Function execution finished.")
-    '''
+        return 'OK'
