@@ -25,7 +25,7 @@ bigquery_datasets = [{
   }]
   }, {
   dataset_id = "linkedin_kaggle"
-  region     = "US"
+  region     = "us-central1"
   table_definitions = [{
     table_id = "job_postings"
     },
