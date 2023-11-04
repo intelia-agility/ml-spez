@@ -11,6 +11,8 @@ resource "google_bigquery_dataset" "project_dataset" {
 
   # Set the project where the dataset will be created, provided as an input variable.
   project = var.project_id
+
+  delete_contents_on_destroy = true
 }
 
 # Create BigQuery tables within the dataset.
