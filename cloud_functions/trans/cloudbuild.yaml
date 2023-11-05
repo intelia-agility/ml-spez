@@ -1,0 +1,20 @@
+steps:
+- id: 'deploy cloud function trans'
+  name: 'gcr.io/cloud-builders/gcloud'
+  args:
+  - functions
+  - deploy
+  - trans
+  - --quiet
+  - --gen2
+  - --timeout=540
+  - --region=us-central1
+  - --source=cloud_functions/trans
+  - --entry-point=trans
+  - --trigger-http
+  - --allow-unauthenticated
+  - --env-vars-file=cloud_functions/trans/.env.yaml
+  - --runtime=python311
+  - --service-account=ml-spez@ml-spez-ccai.iam.gserviceaccount.com
+options:
+  logging: CLOUD_LOGGING_ONLY
