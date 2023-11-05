@@ -24,6 +24,10 @@ bigquery_datasets = [{
     table_id = "interactions"
   }]
   }, {
+  dataset_id = "processed"
+  region     = "us-central1"
+  table_definitions = []
+  }, {
   dataset_id = "linkedin_kaggle"
   region     = "us-central1"
   table_definitions = [{
