@@ -79,17 +79,15 @@ def trans_job_posts():
     description IS NOT NULL;
     '''
     query_job = client.query(query)
-    result_data = []
     try:
         results = query_job.result()  # Waits for job to complete.
-        for result in results:
-            result_data.append(dict(result))
-        return result_data
+        return True
     except Exception as e:
         if hasattr(e, 'message'):
-            print('Unable to get BigQuery location results: ' + e.message)
+            print('Unable to get BigQuery results: ' + e.message)
         else:
-            print('Unable to get BigQuery location results: ' + str(e))
+            print('Unable to get BigQuery results: ' + str(e))
+        return False
 
 def batch_embeddings():
 
