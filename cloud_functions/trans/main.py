@@ -1,6 +1,8 @@
 import functions_framework
 import os
+import requests
 from google.cloud import bigquery
+from google.oauth2 import service_account
 
 def trans_job_posts():
     client = bigquery.Client()
@@ -62,8 +64,7 @@ def trans_job_posts():
     chunk.is_split AS is_split
     FROM
     `{source_table}`,
-    UNNEST(get_chunks(job_id, description, {chonk_size})) AS chunk
-    LIMIT 10;
+    UNNEST(get_chunks(job_id, description, {chonk_size})) AS chunk;
     '''
     query_job = client.query(query)
     result_data = []
@@ -78,12 +79,57 @@ def trans_job_posts():
         else:
             print('Unable to get BigQuery location results: ' + str(e))
 
+def batch_embeddings():
+
+    url = 'https://us-central1-aiplatform.googleapis.com/v1/projects/ml-spez-ccai/locations/us-central1/batchPredictionJobs'
+
+    access_token = os.popen('gcloud auth print-access-token').read().strip()
+
+    print(access_token)
+    '''
+    # Create the headers with the Authorization header
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json; charset=utf-8'
+    }
+
+    # Data to be sent as JSON
+    data = {
+        "name": "test",
+        "displayName": "test",
+        "model": "publishers/google/models/textembedding-gecko",
+        "inputConfig": {
+        "instancesFormat":"bigquery",
+        "bigquerySource":{
+            "inputUri" : "bq://ml-spez-ccai.test_dataset.batch_test"
+        }
+        },
+        "outputConfig": {
+        "predictionsFormat":"bigquery",
+        "bigqueryDestination":{
+            "outputUri": "bq://ml-spez-ccai.test_dataset.test_results"
+        }
+    }
+    }
+
+
+    # Send the POST request with JSON data
+    response = requests.post(url, headers=headers, json=data)
+
+    if response.status_code == 200:
+        print('POST request was successful')
+        print('Response content:', response.text)
+    else:
+        print(response)
+        print(f'POST request failed with status code {response.status_code}')
+    '''
 @functions_framework.http
 def trans(request):
     request_json = request.get_json(silent=True)
     print(request_json)
     if "mode" in request_json and request_json["mode"] == "embedding":
-        trans_job_posts()
+        #trans_job_posts()
+        batch_embeddings()
     if "mode" in request_json and request_json["mode"] == "datastore":
         print("datastore")
     return 'OK'
