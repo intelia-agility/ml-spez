@@ -53,7 +53,7 @@ def trans_job_posts():
     query = f'''
     CREATE TEMP FUNCTION get_chunks(job_id STRING, input_string STRING, max_chunk_size INT64)
     RETURNS ARRAY<STRUCT<job_id STRING, chunk_content STRING, chunk_size INT64, is_split BOOL>>
-    LANGUAGE js AS {js_udf};
+    LANGUAGE js AS \'''{js_udf}\''';
     CREATE OR REPLACE TABLE `{destination_table}` AS
     SELECT
     chunk.job_id AS job_id,
