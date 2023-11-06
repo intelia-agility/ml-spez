@@ -3,6 +3,16 @@ import os
 import requests
 from google.cloud import bigquery
 import google.auth
+import google.auth.transport.requests
+
+def get_default_token():
+  CREDENTIAL_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
+  credentials, project_id = google.auth.default(scopes=CREDENTIAL_SCOPES)
+  request = google.auth.transport.requests.Request()
+  credentials.refresh(request)
+  access_token = credentials.token
+  print('Access token: ', access_token)
+  return credentials.token
 
 def trans_job_posts():
     client = bigquery.Client()
@@ -81,35 +91,33 @@ def trans_job_posts():
 
 def batch_embeddings():
 
-    credentials, project = google.auth.default()
-    access_token = credentials.token
+    access_token = get_default_token()
+    auth = "Bearer " + access_token
 
     url = 'https://us-central1-aiplatform.googleapis.com/v1/projects/ml-spez-ccai/locations/us-central1/batchPredictionJobs'
 
 
-    print(access_token)
-    '''
     # Create the headers with the Authorization header
     headers = {
-        'Authorization': f'Bearer {access_token}',
+        'Authorization': auth,
         'Content-Type': 'application/json; charset=utf-8'
     }
 
     # Data to be sent as JSON
     data = {
-        "name": "test",
-        "displayName": "test",
+        "name": "Batch-Embeddings",
+        "displayName": "Batch-Embeddings",
         "model": "publishers/google/models/textembedding-gecko",
         "inputConfig": {
         "instancesFormat":"bigquery",
         "bigquerySource":{
-            "inputUri" : "bq://ml-spez-ccai.test_dataset.batch_test"
+            "inputUri" : "bq://ml-spez-ccai.processed.chonks"
         }
         },
         "outputConfig": {
         "predictionsFormat":"bigquery",
         "bigqueryDestination":{
-            "outputUri": "bq://ml-spez-ccai.test_dataset.test_results"
+            "outputUri": "bq://ml-spez-ccai.processed.embeddings"
         }
     }
     }
@@ -124,7 +132,7 @@ def batch_embeddings():
     else:
         print(response)
         print(f'POST request failed with status code {response.status_code}')
-    '''
+
 @functions_framework.http
 def trans(request):
     request_json = request.get_json(silent=True)
