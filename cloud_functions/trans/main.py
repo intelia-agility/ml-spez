@@ -82,9 +82,8 @@ def trans_job_posts():
 def batch_embeddings():
 
     credentials, project = google.auth.default()
+    access_token = credentials.token
 
-    # Get the access token
-    access_token = credentials.get_access_token().token
     url = 'https://us-central1-aiplatform.googleapis.com/v1/projects/ml-spez-ccai/locations/us-central1/batchPredictionJobs'
 
 
