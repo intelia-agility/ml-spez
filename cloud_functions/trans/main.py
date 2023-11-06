@@ -74,7 +74,9 @@ def trans_job_posts():
     chunk.is_split AS is_split
     FROM
     `{source_table}`,
-    UNNEST(get_chunks(job_id, description, {chonk_size})) AS chunk;
+    UNNEST(get_chunks(job_id, description, {chonk_size})) AS chunk
+    WHERE
+    description IS NOT NULL;
     '''
     query_job = client.query(query)
     result_data = []
