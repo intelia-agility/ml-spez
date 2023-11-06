@@ -81,9 +81,12 @@ def trans_job_posts():
 
 def batch_embeddings():
 
+    credentials = service_account.Credentials()
+
+    # Get the access token
+    access_token = credentials.get_access_token().token
     url = 'https://us-central1-aiplatform.googleapis.com/v1/projects/ml-spez-ccai/locations/us-central1/batchPredictionJobs'
 
-    access_token = os.popen('gcloud auth print-access-token').read().strip()
 
     print(access_token)
     '''
