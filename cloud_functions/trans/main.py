@@ -138,7 +138,7 @@ def trans(request):
     request_json = request.get_json(silent=True)
     print(request_json)
     if "mode" in request_json and request_json["mode"] == "embedding":
-        #trans_job_posts()
+        trans_job_posts()
         batch_embeddings()
     if "mode" in request_json and request_json["mode"] == "datastore":
         print("datastore")
