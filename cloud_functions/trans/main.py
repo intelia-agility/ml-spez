@@ -2,7 +2,7 @@ import functions_framework
 import os
 import requests
 from google.cloud import bigquery
-from google.oauth2 import service_account
+import google.auth
 
 def trans_job_posts():
     client = bigquery.Client()
@@ -81,7 +81,7 @@ def trans_job_posts():
 
 def batch_embeddings():
 
-    credentials = service_account.Credentials()
+    credentials, project = google.auth.default()
 
     # Get the access token
     access_token = credentials.get_access_token().token
