@@ -20,7 +20,7 @@ def deploy_index(index_id):
     ## create `IndexEndpoint`
     my_index_endpoint = aiplatform.MatchingEngineIndexEndpoint.create(
         display_name = "job_posting_index_endpoint",
-        public_endpoint_enabled = False
+        public_endpoint_enabled = True
     )
     # deploy the Index to the Index Endpoint
     DEPLOYED_INDEX_ID = "job_posting_deployed_index"
