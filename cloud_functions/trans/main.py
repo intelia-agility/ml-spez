@@ -4,6 +4,31 @@ import requests
 from google.cloud import bigquery
 import google.auth
 import google.auth.transport.requests
+from google.cloud import aiplatform
+
+def deploy_index():
+    aiplatform.init(project="ml-spez-ccai", location="us-central1")
+    # create Index
+    my_index = aiplatform.MatchingEngineIndex.create_tree_ah_index(
+        display_name = "job_posting_index",
+        contents_delta_uri = "gs://"+ os.environ["DATASET_BUCKET"],
+        dimensions = 768,
+        approximate_neighbors_count = 10,
+    )
+    ## create `IndexEndpoint`
+    my_index_endpoint = aiplatform.MatchingEngineIndexEndpoint.create(
+        display_name = "job_posting_index_endpoint",
+        public_endpoint_enabled = False
+    )
+    # deploy the Index to the Index Endpoint
+    DEPLOYED_INDEX_ID = "job_posting_deployed_index"
+    my_index_endpoint.deploy_index(
+        index = my_index,
+        deployed_index_id = DEPLOYED_INDEX_ID,
+        machine_type="e2-standard-2",
+        min_replica_count=0,
+        max_replica_count=0
+    )
 
 def get_default_token():
   CREDENTIAL_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
@@ -209,5 +234,6 @@ def trans(request):
         weighted_embeddings = get_weighted_embeddings()
         if weighted_embeddings:
             export_to_gcs()
-
+    if "mode" in request_json and request_json["mode"] == "deploy_index":
+        deploy_index()
     return 'OK'
