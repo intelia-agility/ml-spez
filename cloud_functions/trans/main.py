@@ -241,4 +241,7 @@ def trans(request):
         '''
     if "mode" in request_json and request_json["mode"] == "create_index":
         create_index()
+    if "mode" in request_json and "index_id" in request_json and request_json["mode"] == "deploy_index":
+        index_id = request_json["index_id"]
+        deploy_index(index_id)
     return 'OK'
