@@ -14,6 +14,70 @@ def get_default_token():
   print('Access token: ', access_token)
   return credentials.token
 
+def export_to_gcs():
+    client = bigquery.Client()
+    dataset_bucket = os.environ["DATASET_BUCKET"]
+    destination_uri = "gs://{}/{}".format(dataset_bucket, "embeddings.json")
+    dataset_ref = bigquery.DatasetReference("ml-spez-ccai", "processed")
+    table_ref = dataset_ref.table("weighted_embeddings")
+    job_config = bigquery.job.ExtractJobConfig()
+    job_config.destination_format = bigquery.DestinationFormat.NEWLINE_DELIMITED_JSON
+
+    extract_job = client.extract_table(
+        table_ref,
+        destination_uri,
+        job_config=job_config,
+        # Location must match that of the source table.
+        location="us-central1",
+    )  # API request
+    extract_job.result()  # Waits for job to complete.
+
+
+def get_weighted_embeddings():
+    client = bigquery.Client()
+    js_udf = '''
+    if (is_split_array.includes(false)){
+        return chunk_embeddings[0];
+    }
+    if (chunk_embeddings.length !== chunk_lens.length) {
+    return [];
+    }
+
+    var weights_sum = chunk_lens.reduce((a, b) => a + b, 0);
+
+    var result = chunk_embeddings[0].map((_, i) =>
+    chunk_embeddings.reduce((sum, arr, k) => sum + arr[i] * chunk_lens[k] / weights_sum, 0)
+    );
+    return result;
+    '''
+    query = f'''
+    CREATE TEMP FUNCTION
+    weighted_embeddings(chunk_embeddings ARRAY<JSON>,chunk_lens ARRAY<INT64>,is_split_array ARRAY<BOOL>)
+    RETURNS ARRAY<FLOAT64>
+    LANGUAGE js AS \'''{js_udf}\''';
+    CREATE OR REPLACE TABLE
+    `ml-spez-ccai.processed.weighted_embeddings` AS
+    SELECT
+    job_id AS id,
+    weighted_embeddings(ARRAY_AGG(predictions[0].embeddings.values),ARRAY_AGG(chunk_size),ARRAY_AGG(is_split)) AS embedding
+    FROM
+    `ml-spez-ccai.processed.embeddings`
+    WHERE
+    content != ""
+    GROUP BY
+    job_id;
+    '''
+    query_job = client.query(query)
+    try:
+        results = query_job.result()  # Waits for job to complete.
+        return True
+    except Exception as e:
+        if hasattr(e, 'message'):
+            print('Unable to get BigQuery results: ' + e.message)
+        else:
+            print('Unable to get BigQuery results: ' + str(e))
+        return False
+
 def trans_job_posts():
     client = bigquery.Client()
     source_table = os.environ["SOURCE_TABLE"]
@@ -137,10 +201,16 @@ def batch_embeddings():
 def trans(request):
     request_json = request.get_json(silent=True)
     print(request_json)
-    if "mode" in request_json and request_json["mode"] == "embedding":
+    if "mode" in request_json and request_json["mode"] == "generate_embedding":
         split_descriptions = trans_job_posts()
         if split_descriptions:
             batch_embeddings()
-    if "mode" in request_json and request_json["mode"] == "datastore":
-        print("datastore")
+    if "mode" in request_json and request_json["mode"] == "generate_datastore":
+        export_to_gcs()
+        '''
+        weighted_embeddings = get_weighted_embeddings()
+        if weighted_embeddings:
+        '''
+
+
     return 'OK'
