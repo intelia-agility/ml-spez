@@ -16,13 +16,14 @@ def create_index():
         approximate_neighbors_count = 10,
     )
 
-def deploy_index(index_id):
+def deploy_index(project_number, index_id):
     ## create `IndexEndpoint`
     my_index_endpoint = aiplatform.MatchingEngineIndexEndpoint.create(
         display_name = "job_posting_index_endpoint",
         public_endpoint_enabled = True
     )
-    my_index = aiplatform.MatchingEngineIndex(index_name=index_id)
+    index_path = f'projects/{project_number}/locations/us-central1/indexes/{index_id}'
+    my_index = aiplatform.MatchingEngineIndex(index_name=index_path)
     # deploy the Index to the Index Endpoint
     DEPLOYED_INDEX_ID = "job_posting_deployed_index"
     my_index_endpoint.deploy_index(
@@ -239,7 +240,8 @@ def trans(request):
             export_to_gcs()
     if "mode" in request_json and request_json["mode"] == "create_index":
         create_index()
-    if "mode" in request_json and "index_id" in request_json and request_json["mode"] == "deploy_index":
+    if "mode" in request_json and "index_id" in request_json and "project_number" in request_json and request_json["mode"] == "deploy_index":
         index_id = request_json["index_id"]
-        deploy_index(index_id)
+        project_number = request_json["project_number"]
+        deploy_index(project_number,index_id)
     return 'OK'
