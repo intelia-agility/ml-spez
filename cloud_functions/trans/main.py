@@ -201,16 +201,13 @@ def batch_embeddings():
 def trans(request):
     request_json = request.get_json(silent=True)
     print(request_json)
-    if "mode" in request_json and request_json["mode"] == "generate_embedding":
+    if "mode" in request_json and request_json["mode"] == "generate_embeddings":
         split_descriptions = trans_job_posts()
         if split_descriptions:
             batch_embeddings()
-    if "mode" in request_json and request_json["mode"] == "generate_datastore":
-        export_to_gcs()
-        '''
+    if "mode" in request_json and request_json["mode"] == "export_embeddings":
         weighted_embeddings = get_weighted_embeddings()
         if weighted_embeddings:
-        '''
-
+            export_to_gcs()
 
     return 'OK'
