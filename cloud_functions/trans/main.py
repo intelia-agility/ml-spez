@@ -233,12 +233,9 @@ def trans(request):
         if split_descriptions:
             batch_embeddings()
     if "mode" in request_json and request_json["mode"] == "export_embeddings":
-        export_to_gcs()
-        '''
         weighted_embeddings = get_weighted_embeddings()
         if weighted_embeddings:
             export_to_gcs()
-        '''
     if "mode" in request_json and request_json["mode"] == "create_index":
         create_index()
     if "mode" in request_json and "index_id" in request_json and request_json["mode"] == "deploy_index":
