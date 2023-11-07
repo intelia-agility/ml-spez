@@ -30,8 +30,8 @@ def deploy_index(project_number, index_id):
         index = my_index,
         deployed_index_id = DEPLOYED_INDEX_ID,
         machine_type="e2-standard-2",
-        min_replica_count=0,
-        max_replica_count=0
+        min_replica_count=1,
+        max_replica_count=1
     )
 
 def get_default_token():
