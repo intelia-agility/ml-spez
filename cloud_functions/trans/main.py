@@ -14,6 +14,7 @@ def create_index():
         contents_delta_uri = "gs://"+ os.environ["DATASET_BUCKET"],
         dimensions = 768,
         approximate_neighbors_count = 10,
+        shard_size = "SHARD_SIZE_SMALL"
     )
 
 def deploy_index(project_number, index_id):
