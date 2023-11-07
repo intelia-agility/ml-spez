@@ -267,6 +267,7 @@ def trans(request):
         if weighted_embeddings:
             export_to_gcs()
     if "mode" in request_json and "project_number" in request_json and request_json["mode"] == "create_index":
+        project_number = request_json["project_number"]
         create_index(project_number)
     if "mode" in request_json and "index_id" in request_json and "project_number" in request_json and request_json["mode"] == "deploy_index":
         index_id = request_json["index_id"]
