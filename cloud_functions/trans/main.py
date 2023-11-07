@@ -6,16 +6,43 @@ import google.auth
 import google.auth.transport.requests
 from google.cloud import aiplatform
 
-def create_index():
-    aiplatform.init(project="ml-spez-ccai", location="us-central1")
-    # create Index
-    my_index = aiplatform.MatchingEngineIndex.create_tree_ah_index(
-        display_name = "job_posting_index",
-        contents_delta_uri = "gs://"+ os.environ["DATASET_BUCKET"],
-        dimensions = 768,
-        approximate_neighbors_count = 10,
-        shard_size = "SHARD_SIZE_SMALL"
-    )
+def create_index(project_number):
+    endpoint = f"https://us-central1-aiplatform.googleapis.com/v1/projects/{project_number}/locations/us-central1/indexes"
+    request_body = {
+    "display_name": "job_posting_index",
+    "metadata": {
+        "contentsDeltaUri": "gs://"+ os.environ["DATASET_BUCKET"],
+        "config": {
+        "dimensions": 768,
+        "approximateNeighborsCount": 10,
+        "shardSize": "SHARD_SIZE_SMALL",
+        "algorithm_config": {
+            "treeAhConfig": {
+            "leafNodeEmbeddingCount": 1000,
+            "leafNodesToSearchPercent": 10
+            }
+        }
+        }
+    }
+    }
+    access_token = get_default_token()
+    auth = "Bearer " + access_token
+
+    # Create the headers with the Authorization header
+    headers = {
+        'Authorization': auth,
+        'Content-Type': 'application/json; charset=utf-8'
+    }
+
+    # Send the POST request with JSON data
+    response = requests.post(endpoint, headers=headers, json=request_body)
+
+    if response.status_code == 200:
+        print('POST request was successful')
+        print('Response content:', response.text)
+    else:
+        print(response)
+        print(f'POST request failed with status code {response.status_code}')
 
 def deploy_index(project_number, index_id):
     ## create `IndexEndpoint`
@@ -239,8 +266,8 @@ def trans(request):
         weighted_embeddings = get_weighted_embeddings()
         if weighted_embeddings:
             export_to_gcs()
-    if "mode" in request_json and request_json["mode"] == "create_index":
-        create_index()
+    if "mode" in request_json and "project_number" in request_json and request_json["mode"] == "create_index":
+        create_index(project_number)
     if "mode" in request_json and "index_id" in request_json and "project_number" in request_json and request_json["mode"] == "deploy_index":
         index_id = request_json["index_id"]
         project_number = request_json["project_number"]
