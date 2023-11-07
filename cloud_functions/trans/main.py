@@ -6,7 +6,7 @@ import google.auth
 import google.auth.transport.requests
 from google.cloud import aiplatform
 
-def deploy_index():
+def create_index():
     aiplatform.init(project="ml-spez-ccai", location="us-central1")
     # create Index
     my_index = aiplatform.MatchingEngineIndex.create_tree_ah_index(
@@ -15,6 +15,8 @@ def deploy_index():
         dimensions = 768,
         approximate_neighbors_count = 10,
     )
+
+def deploy_index(index_id):
     ## create `IndexEndpoint`
     my_index_endpoint = aiplatform.MatchingEngineIndexEndpoint.create(
         display_name = "job_posting_index_endpoint",
@@ -23,7 +25,7 @@ def deploy_index():
     # deploy the Index to the Index Endpoint
     DEPLOYED_INDEX_ID = "job_posting_deployed_index"
     my_index_endpoint.deploy_index(
-        index = my_index,
+        index = index_id,
         deployed_index_id = DEPLOYED_INDEX_ID,
         machine_type="e2-standard-2",
         min_replica_count=0,
@@ -231,9 +233,12 @@ def trans(request):
         if split_descriptions:
             batch_embeddings()
     if "mode" in request_json and request_json["mode"] == "export_embeddings":
+        export_to_gcs()
+        '''
         weighted_embeddings = get_weighted_embeddings()
         if weighted_embeddings:
             export_to_gcs()
-    if "mode" in request_json and request_json["mode"] == "deploy_index":
-        deploy_index()
+        '''
+    if "mode" in request_json and request_json["mode"] == "create_index":
+        create_index()
     return 'OK'
