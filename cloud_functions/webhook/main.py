@@ -82,19 +82,23 @@ def webhook(request):
                             "folder_created": True,
                         },
                     },
-                    "fulfillment_response": {
-                    "richContent": [
-                        [
-                        {
-                            "type": "description",
-                            "title": "Description title",
-                            "text": [
-                            "This is text line 1.",
-                            "This is text line 2."
-                            ]
-                        }
+                    'fulfillment_response': {
+                        'messages': [
+                            {
+                                'payload': {
+                                    'richContent': [
+                                        [
+                                            {
+                                                'type': 'info',
+                                                'info': {
+                                                    'formattedText': text
+                                                }
+                                            }
+                                        ]
+                                    ]
+                                }
+                            }
                         ]
-                    ]
                     }
                 }
                 return json_response
