@@ -82,18 +82,19 @@ def webhook(request):
                             "folder_created": True,
                         },
                     },
-                "fulfillment_messages": [{
-                    "payload": {
-                    "richContent": [
-                        [{
-                        "type": "chips",
-                        "options": [{
-                            "text": "Empezar!"
-                        }]
-                        }]
-                    ]
+                "fulfillment_text": "This message is from Dialogflow's testing!",
+                "fulfillment_messages":[
+                    {
+                        "payload": {
+                            "richContent": [[{
+                                "actionLink": "https://assistant.google.com/",
+                                "subtitle": "This is the body text of a card.  You can even use line\n  breaks and emoji! 💁",
+                                "title": "Title: this is a card title",
+                                "type": "info"
+                            }]]
+                        }
                     }
-                }]
+                ]
                 }
                 return json_response
         if "test" in request_json:
