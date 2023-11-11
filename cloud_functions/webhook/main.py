@@ -82,10 +82,7 @@ def webhook(request):
                             "folder_created": True,
                         },
                     },
-                    'fulfillment_response': {
-                        'messages': [
-                            {
-                                'payload': {
+                    'payload': {
                                     'richContent': [
                                         [
                                             {
@@ -97,9 +94,7 @@ def webhook(request):
                                         ]
                                     ]
                                 }
-                            }
-                        ]
-                    }
+
                 }
                 return json_response
         if "test" in request_json:
