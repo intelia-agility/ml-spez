@@ -28,8 +28,10 @@ def watch_changes(folder_id):
 
 @functions_framework.http
 def webhook(request):
-    request_json = request.get_json(silent=True)
-    print(request_json)
-    if "test" in request_json:
-        watch_changes("1a9J_mtwKMN96jS54pqTfx9rUEutFQ6rE")
+    print(dict(request.headers))
+    if request.headers['Content-Type'] == 'application/json':
+        request_json = request.get_json(silent=True)
+        print(request_json)
+        if "test" in request_json:
+            watch_changes("1a9J_mtwKMN96jS54pqTfx9rUEutFQ6rE")
     return 'OK'
