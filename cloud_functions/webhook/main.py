@@ -1,6 +1,6 @@
 import functions_framework
 import os
-import time
+import uuid
 from googleapiclient.discovery import build
 import google.auth
 import google.auth.transport.requests
@@ -16,7 +16,7 @@ def watch_changes(folder_id):
 
     # Create a watch request for the folder
     watch_request = {
-        'id': str(time.time()),
+        'id': str(uuid.uuid4()),
         'type': 'web_hook',
         'address': 'https://us-central1-ml-spez-ccai.cloudfunctions.net/webhook',
         'payload': True
