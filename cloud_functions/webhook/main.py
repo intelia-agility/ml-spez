@@ -82,24 +82,18 @@ def webhook(request):
                             "folder_created": True,
                         },
                     },
-                    'fulfillment_response': {
-                        'messages': [
-                            {
-
-                                    'richContent': [
-                                        [
-                                            {
-                                                'type': 'info',
-                                                'info': {
-                                                    'formattedText': text
-                                                }
-                                            }
-                                        ]
-                                    ]
-
-                            }
-                        ]
+                "fulfillment_messages": [{
+                    "payload": {
+                    "richContent": [
+                        [{
+                        "type": "chips",
+                        "options": [{
+                            "text": "Empezar!"
+                        }]
+                        }]
+                    ]
                     }
+                }]
                 }
                 return json_response
         if "test" in request_json:
