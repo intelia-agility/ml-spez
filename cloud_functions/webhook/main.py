@@ -9,13 +9,13 @@ def get_credentials():
   credentials, project_id = google.auth.default(scopes=CREDENTIAL_SCOPES)
   return credentials
 
-def watch_changes(folder_id,session_id):
+def watch_changes(folder_id):
     credentials = get_credentials()
     service = build('drive', 'v3', credentials=credentials)
 
     # Create a watch request for the folder
     watch_request = {
-        'id': session_id,
+        'id': folder_id,
         'type': 'web_hook',
         'address': 'https://us-central1-ml-spez-ccai.cloudfunctions.net/webhook',
         'payload': True
@@ -29,5 +29,5 @@ def watch_changes(folder_id,session_id):
 def webhook(request):
     request_json = request.get_json(silent=True)
     print(request_json)
-    watch_changes("1a9J_mtwKMN96jS54pqTfx9rUEutFQ6rE","something")
+    watch_changes("1a9J_mtwKMN96jS54pqTfx9rUEutFQ6rE")
     return 'OK'
