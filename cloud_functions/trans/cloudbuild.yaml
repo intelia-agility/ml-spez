@@ -7,6 +7,7 @@ steps:
   - trans
   - --quiet
   - --gen2
+  - --memory=2GB
   - --timeout=540
   - --region=us-central1
   - --source=cloud_functions/trans
