@@ -29,7 +29,7 @@ def watch_changes(folder_id):
 @functions_framework.http
 def webhook(request):
     print(dict(request.headers))
-    if request.headers['Content-Type'] == 'application/json':
+    if 'Content-Type' in request.headers and request.headers['Content-Type'] == 'application/json':
         request_json = request.get_json(silent=True)
         print(request_json)
         if "test" in request_json:
