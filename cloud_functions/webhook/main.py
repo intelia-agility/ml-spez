@@ -72,14 +72,30 @@ def webhook(request):
             tag = request_json["fulfillmentInfo"]["tag"]
             if tag == "create_folder":
                 public_link = create_folder(session_id)
-                text = f'''Please use this folder to upload a copy of your resume and let me know once done. {public_link}'''
+                text =  f'''
+                <p>Please use this folder to upload a copy of your resume and let me know once done.</p>
+                <p><a href="{public_link}" target="_blank">Upload Your Resume</a></p>
+                '''
                 json_response = {
                     "sessionInfo": {
                         "parameters": {
                             "folder_created": True,
                         },
                     },
-                    "fulfillment_response": {"messages": [{"text": {"text": [text]}}]}
+                    "fulfillment_response": {
+                    "richContent": [
+                        [
+                        {
+                            "type": "description",
+                            "title": "Description title",
+                            "text": [
+                            "This is text line 1.",
+                            "This is text line 2."
+                            ]
+                        }
+                        ]
+                    ]
+                    }
                 }
                 return json_response
         if "test" in request_json:
