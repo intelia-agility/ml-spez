@@ -19,8 +19,18 @@ def create_folder(folder_id):
     }
 
     file = service.files().create(body=file_metadata, fields="id").execute()
-    print(f'Folder ID: "{file.get("id")}".')
-    return file.get("id")
+    folder_id = file.get("id")
+    permission = {
+        'type': 'anyone',
+        'role': 'writer'
+    }
+    permission_result = service.permissions().create(
+        fileId=folder_id,
+        body=permission,
+        fields='id'
+    ).execute()
+    public_link = f'https://drive.google.com/drive/folders/{folder_id}?usp=sharing'
+    return public_link
 
   except HttpError as error:
     print(f"An error occurred: {error}")
@@ -61,7 +71,8 @@ def webhook(request):
         if "fulfillmentInfo" in request_json and "tag" in request_json["fulfillmentInfo"] and session_id:
             tag = request_json["fulfillmentInfo"]["tag"]
             if tag == "create_folder":
-                folder_id = create_folder(session_id)
+                public_link = create_folder(session_id)
+                print(public_link)
 
         if "test" in request_json:
             watch_changes("1a9J_mtwKMN96jS54pqTfx9rUEutFQ6rE")
