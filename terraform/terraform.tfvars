@@ -77,4 +77,10 @@ trigger_definitions = [{
   included_files   = "cloud_functions/trans/**"
   cloud_build_path = "cloud_functions/trans/cloudbuild.yaml"
   invert_regex     = false
+}, {
+  trigger_name     = "Webhook"
+  branch           = ".*"
+  included_files   = "cloud_functions/webhook/**"
+  cloud_build_path = "cloud_functions/webhook/cloudbuild.yaml"
+  invert_regex     = false
 }]
