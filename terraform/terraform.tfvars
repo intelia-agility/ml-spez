@@ -15,6 +15,15 @@ enabled_apis = [
     }, {
     api_name = "Eventarc API"
     api_id   = "eventarc.googleapis.com"
+    }, {
+    api_name = "Google Drive API"
+    api_id   = "drive.googleapis.com"
+    }, {
+    api_name = "Google Drive Activity API"
+    api_id   = "driveactivity.googleapis.com"
+    }, {
+    api_name = "Google Discovery API"
+    api_id   = "discoveryengine.googleapis.com"
     }
 ]
 bigquery_datasets = [{
