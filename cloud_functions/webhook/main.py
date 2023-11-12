@@ -82,21 +82,24 @@ def webhook(request):
                             "folder_created": True,
                         },
                     },
-                "fulfillmentMessages": [
-                    {
-                    "card": {
-                        "title": "card title",
-                        "subtitle": "card text",
-                        "imageUri": "https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
-                        "buttons": [
-                        {
-                            "text": "button text",
-                            "postback": "https://assistant.google.com/"
-                        }
+                    'fulfillment_response': {
+                        'messages': [
+                            {
+                                'payload': {
+                                    'richContent': [
+                                        [
+                                            {
+                                                'type': 'info',
+                                                'info': {
+                                                    'formattedText': text
+                                                }
+                                            }
+                                        ]
+                                    ]
+                                }
+                            }
                         ]
                     }
-                    }
-                ]
                 }
                 return json_response
         if "test" in request_json:
