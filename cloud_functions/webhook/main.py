@@ -82,17 +82,19 @@ def webhook(request):
                             "folder_created": True,
                         },
                     },
-                "fulfillment_text": "This message is from Dialogflow's testing!",
-                "fulfillment_messages":[
+                "fulfillmentMessages": [
                     {
-                        "payload": {
-                            "richContent": [[{
-                                "actionLink": "https://assistant.google.com/",
-                                "subtitle": "This is the body text of a card.  You can even use line\n  breaks and emoji! 💁",
-                                "title": "Title: this is a card title",
-                                "type": "info"
-                            }]]
+                    "card": {
+                        "title": "card title",
+                        "subtitle": "card text",
+                        "imageUri": "https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
+                        "buttons": [
+                        {
+                            "text": "button text",
+                            "postback": "https://assistant.google.com/"
                         }
+                        ]
+                    }
                     }
                 ]
                 }
