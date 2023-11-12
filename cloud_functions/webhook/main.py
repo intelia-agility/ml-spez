@@ -7,13 +7,13 @@ import google.auth
 import google.auth.transport.requests
 from googleapiclient.errors import HttpError
 
-def create_folder(folder_id):
+def create_folder(session_id):
 
   try:
     credentials = get_credentials()
     service = build('drive', 'v3', credentials=credentials)
     file_metadata = {
-        "name": folder_id,
+        "name": session_id,
         "parents" : ["1a9J_mtwKMN96jS54pqTfx9rUEutFQ6rE"],
         "mimeType": "application/vnd.google-apps.folder",
     }
@@ -30,7 +30,7 @@ def create_folder(folder_id):
         fields='id'
     ).execute()
     public_link = f'https://drive.google.com/drive/folders/{folder_id}?usp=sharing'
-    return public_link
+    return folder_id, public_link
 
   except HttpError as error:
     print(f"An error occurred: {error}")
@@ -71,7 +71,8 @@ def webhook(request):
         if "fulfillmentInfo" in request_json and "tag" in request_json["fulfillmentInfo"] and session_id:
             tag = request_json["fulfillmentInfo"]["tag"]
             if tag == "create_folder":
-                public_link = create_folder(session_id)
+                folder_id, public_link = create_folder(session_id)
+                watch_changes(folder_id)
                 html =  f'''
                 <p>Please use this folder to upload a copy of your resume and let me know once done.</p>
                 <p><a href="{public_link}" target="_blank">Upload Your Resume</a></p>
@@ -100,6 +101,5 @@ def webhook(request):
                     }
                 }
                 return json_response
-        if "test" in request_json:
-            watch_changes("1a9J_mtwKMN96jS54pqTfx9rUEutFQ6rE")
+
     return 'OK'
