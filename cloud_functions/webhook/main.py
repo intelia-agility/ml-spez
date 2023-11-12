@@ -72,7 +72,7 @@ def webhook(request):
             tag = request_json["fulfillmentInfo"]["tag"]
             if tag == "create_folder":
                 public_link = create_folder(session_id)
-                text =  f'''
+                html =  f'''
                 <p>Please use this folder to upload a copy of your resume and let me know once done.</p>
                 <p><a href="{public_link}" target="_blank">Upload Your Resume</a></p>
                 '''
@@ -89,10 +89,8 @@ def webhook(request):
                                     'richContent': [
                                         [
                                             {
-                                                'type': 'info',
-                                                'info': {
-                                                    'formattedText': text
-                                                }
+                                                "type": "html",
+                                                "html": html
                                             }
                                         ]
                                     ]
