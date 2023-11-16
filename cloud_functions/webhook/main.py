@@ -79,7 +79,7 @@ def watch_changes(folder_id):
 
 @functions_framework.http
 def webhook(request):
-    print(dict(request.headers))
+    #print(dict(request.headers))
     root_folder_id = os.environ.get("ROOT_FOLDER_ID")
     if 'Content-Type' in request.headers and request.headers['Content-Type'] == 'application/json':
         request_json = request.get_json(silent=True)
@@ -184,7 +184,6 @@ def webhook(request):
             if tag == "file_uploaded":
                 resume_folder_id = session_parameters["resume_folder_id"]
                 files = get_folder_contents(resume_folder_id)
-                options = []
                 if len(files) == 0:
                     text = "I was unable to find any files."
                     resume_folder_link = session_parameters["resume_folder_link"]
@@ -221,9 +220,20 @@ def webhook(request):
                             }
                         }
                 else:
+                    buttons = []
                     text = "Please click on the file name to process."
                     for file in files:
-                       options.append({"text": file["name"]})
+                        buttons.append({
+                                        "type": "button",
+                                        "icon": {
+                                        "type": "chevron_right",
+                                        "color": "#FF9800"
+                                        },
+                                        "text": file["name"],
+                                        "event": {
+                                        "event": "file_confirmed"
+                                        }
+                                    })
 
                     json_response = {
                             'fulfillment_response': {
@@ -231,20 +241,14 @@ def webhook(request):
                                     {"text": {"text": [text]}},
                                     {
                                         'payload': {
-                                            'richContent': [
-                                                [
-                                                    {
-                                                        "type": "chips",
-                                                        "options": options
-                                                    }
-                                                ]
-                                            ]
+                                            'richContent': buttons
                                         }
                                     }
                                 ]
                             }
                         }
                 return json_response
-
+            if tag == "file_confirmed":
+               print("event is file confirmed")
 
     return 'OK'
