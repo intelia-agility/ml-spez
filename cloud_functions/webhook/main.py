@@ -7,14 +7,16 @@ import google.auth
 import google.auth.transport.requests
 from googleapiclient.errors import HttpError
 
-def create_folder(session_id):
+
+
+def create_folder(name, root):
 
   try:
     credentials = get_credentials()
     service = build('drive', 'v3', credentials=credentials)
     file_metadata = {
-        "name": session_id,
-        "parents" : ["1a9J_mtwKMN96jS54pqTfx9rUEutFQ6rE"],
+        "name": name,
+        "parents" : [root],
         "mimeType": "application/vnd.google-apps.folder",
     }
 
@@ -29,6 +31,7 @@ def create_folder(session_id):
         body=permission,
         fields='id'
     ).execute()
+
     public_link = f'https://drive.google.com/drive/folders/{folder_id}?usp=sharing'
     return folder_id, public_link
 
@@ -60,6 +63,7 @@ def watch_changes(folder_id):
 @functions_framework.http
 def webhook(request):
     print(dict(request.headers))
+    root_folder_id = os.environ.get("ROOT_FOLDER_ID")
     if 'Content-Type' in request.headers and request.headers['Content-Type'] == 'application/json':
         request_json = request.get_json(silent=True)
         print(request_json)
@@ -71,16 +75,26 @@ def webhook(request):
         if "fulfillmentInfo" in request_json and "tag" in request_json["fulfillmentInfo"] and session_id:
             tag = request_json["fulfillmentInfo"]["tag"]
             if tag == "create_folder":
-                folder_id, public_link = create_folder(session_id)
+                session_folder_id, session_folder_link = create_folder(session_id, root_folder_id)
+                resume_folder_id, resume_folder_link = create_folder("Resumes", session_folder_id)
+                cl_folder_id, cl_folder_link = create_folder("Cover Letters", session_folder_id)
+                matches_folder_id, matches_folder_link = create_folder("Matching Jobs", session_folder_id)
                 #watch_changes(folder_id)
                 html =  f'''
                 <p>Please use this folder to upload a copy of your resume and let me know once done.</p>
-                <p><a href="{public_link}" target="_blank">Upload Your Resume</a></p>
+                <p><a href="{resume_folder_link}" target="_blank">Upload Your Resume</a></p>
                 '''
                 json_response = {
                     "sessionInfo": {
                         "parameters": {
-                            "folder_created": True,
+                            "folders_created": True,
+                            "session_folder_id": session_folder_id,
+                            "session_folder_link": session_folder_link,
+                            "resume_folder_id": resume_folder_id,
+                            "cl_folder_id": cl_folder_id,
+                            "cl_folder_link": cl_folder_link,
+                            "matches_folder_id": matches_folder_id,
+                            "matches_folder_link": matches_folder_link
                         },
                     },
                     'fulfillment_response': {
