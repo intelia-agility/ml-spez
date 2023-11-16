@@ -220,42 +220,17 @@ def webhook(request):
                             }
                         }
                 else:
-                    buttons = []
+                    options = []
                     text = "Please click on the file name to process."
                     for file in files:
-                        buttons.append({
-                                        "type": "button",
-                                        "icon": {
-                                        "type": "chevron_right",
-                                        "color": "#FF9800"
-                                        },
-                                        "text": file["name"]
-                                    })
-                    buttons =     [
-                            {
-                                "type": "list",
-                                "title": "List item 1 title",
-                                "subtitle": "filetype:doc",
-                                "event": {
-                                "event": ""
-                                }
-                            },
-                            {
-                                "type": "list",
-                                "title": "List item 2 title",
-                                "subtitle": "filetype:pdf",
-                                "event": {
-                                "event": ""
-                                }
-                            }
-                            ]
+                        options.append({"text": "Filename: "+file["name"]})
                     json_response = {
                             'fulfillment_response': {
                                 'messages': [
                                     {"text": {"text": [text]}},
                                     {
                                         'payload': {
-                                            'richContent': [buttons]
+                                            'richContent': [options]
                                         }
                                     }
                                 ]
