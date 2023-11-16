@@ -233,6 +233,18 @@ def webhook(request):
                             ]
                         })
                     json_response = {
+                            "page_info": {
+                                        "form_info": {
+                                            "parameter_info": [
+                                                {
+                                                    "displayName": "files_displayed",
+                                                    "required": False,
+                                                    "state": "VALID",
+                                                    "value": True,
+                                                },
+                                            ],
+                                        },
+                                    },
                             'fulfillment_response': {
                                 'messages': [
                                     {"text": {"text": [text]}},
