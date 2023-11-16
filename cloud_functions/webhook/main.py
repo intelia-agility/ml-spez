@@ -68,6 +68,11 @@ def webhook(request):
         request_json = request.get_json(silent=True)
         print(request_json)
         if "sessionInfo" in request_json and "session" in request_json["sessionInfo"]:
+            session_info = request_json["sessionInfo"]
+            if "parameters" in session_info:
+                session_parameters = session_info["parameters"]
+            else:
+               session_parameters = {}
             session_id_regex = r".+\/sessions\/(.+)"
             session = request_json["sessionInfo"]["session"]
             regex_match = re.search(session_id_regex, session)
@@ -75,45 +80,71 @@ def webhook(request):
         if "fulfillmentInfo" in request_json and "tag" in request_json["fulfillmentInfo"] and session_id:
             tag = request_json["fulfillmentInfo"]["tag"]
             if tag == "create_folder":
-                session_folder_id, session_folder_link = create_folder(session_id, root_folder_id)
-                resume_folder_id, resume_folder_link = create_folder("Resumes", session_folder_id)
-                cl_folder_id, cl_folder_link = create_folder("Cover Letters", session_folder_id)
-                matches_folder_id, matches_folder_link = create_folder("Matching Jobs", session_folder_id)
-                #watch_changes(folder_id)
-                html =  f'''
-                <p>Please use this folder to upload a copy of your resume and let me know once done.</p>
-                <p><a href="{resume_folder_link}" target="_blank">Upload Your Resume</a></p>
-                '''
-                json_response = {
-                    "sessionInfo": {
-                        "parameters": {
-                            "folders_created": True,
-                            "session_folder_id": session_folder_id,
-                            "session_folder_link": session_folder_link,
-                            "resume_folder_id": resume_folder_id,
-                            "cl_folder_id": cl_folder_id,
-                            "cl_folder_link": cl_folder_link,
-                            "matches_folder_id": matches_folder_id,
-                            "matches_folder_link": matches_folder_link
+                if "folders_created" not in session_parameters:
+                    session_folder_id, session_folder_link = create_folder(session_id, root_folder_id)
+                    resume_folder_id, resume_folder_link = create_folder("Resumes", session_folder_id)
+                    cl_folder_id, cl_folder_link = create_folder("Cover Letters", session_folder_id)
+                    matches_folder_id, matches_folder_link = create_folder("Matching Jobs", session_folder_id)
+                    #watch_changes(folder_id)
+                    html =  f'''
+                    <p>Please use this folder to upload a copy of your resume and let me know once done.</p>
+                    <p><a href="{resume_folder_link}" target="_blank">Upload Your Resume</a></p>
+                    '''
+                    json_response = {
+                        "sessionInfo": {
+                            "parameters": {
+                                "folders_created": True,
+                                "session_folder_id": session_folder_id,
+                                "session_folder_link": session_folder_link,
+                                "resume_folder_id": resume_folder_id,
+                                "resume_folder_link": resume_folder_link,
+                                "cl_folder_id": cl_folder_id,
+                                "cl_folder_link": cl_folder_link,
+                                "matches_folder_id": matches_folder_id,
+                                "matches_folder_link": matches_folder_link
+                            },
                         },
-                    },
-                    'fulfillment_response': {
-                        'messages': [
-                            {
-                                'payload': {
-                                    'richContent': [
-                                        [
-                                            {
-                                                "type": "html",
-                                                "html": html
-                                            }
+                        'fulfillment_response': {
+                            'messages': [
+                                {
+                                    'payload': {
+                                        'richContent': [
+                                            [
+                                                {
+                                                    "type": "html",
+                                                    "html": html
+                                                }
+                                            ]
                                         ]
-                                    ]
+                                    }
                                 }
-                            }
-                        ]
+                            ]
+                        }
                     }
-                }
+                else:
+                    resume_folder_link = session_parameters["resume_folder_link"]
+                    html =  f'''
+                    <p>Please use this folder to upload a copy of your resume and let me know once done.</p>
+                    <p><a href="{resume_folder_link}" target="_blank">Upload Your Resume</a></p>
+                    '''
+                    json_response = {
+                        'fulfillment_response': {
+                            'messages': [
+                                {
+                                    'payload': {
+                                        'richContent': [
+                                            [
+                                                {
+                                                    "type": "html",
+                                                    "html": html
+                                                }
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
                 return json_response
 
     return 'OK'
