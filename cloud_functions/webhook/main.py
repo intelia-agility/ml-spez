@@ -231,7 +231,24 @@ def webhook(request):
                                         },
                                         "text": file["name"]
                                     })
-
+                    buttons =     [
+                            {
+                                "type": "list",
+                                "title": "List item 1 title",
+                                "subtitle": "filetype:doc",
+                                "event": {
+                                "event": ""
+                                }
+                            },
+                            {
+                                "type": "list",
+                                "title": "List item 2 title",
+                                "subtitle": "filetype:pdf",
+                                "event": {
+                                "event": ""
+                                }
+                            }
+                            ]
                     json_response = {
                             'fulfillment_response': {
                                 'messages': [
