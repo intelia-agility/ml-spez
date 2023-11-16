@@ -229,10 +229,7 @@ def webhook(request):
                                         "type": "chevron_right",
                                         "color": "#FF9800"
                                         },
-                                        "text": file["name"],
-                                        "event": {
-                                        "event": "file_confirmed"
-                                        }
+                                        "text": file["name"]
                                     })
 
                     json_response = {
