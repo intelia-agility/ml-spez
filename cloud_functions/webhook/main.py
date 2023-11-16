@@ -186,31 +186,64 @@ def webhook(request):
                 files = get_folder_contents(resume_folder_id)
                 options = []
                 if len(files) == 0:
-                    text = "I was unable to find any files. Please upload a file to the shared folder to continue."
+                    text = "I was unable to find any files."
+                    resume_folder_link = session_parameters["resume_folder_link"]
+                    html =  f'''
+                    <p>Please use this folder to upload a copy of your resume.</p>
+                    <p><a href="{resume_folder_link}" target="_blank">Upload Your Resume</a></p>
+                    <p>Please click the button below once done.</p>
+                    '''
+                    json_response = {
+                            'fulfillment_response': {
+                                'messages': [
+                                    {"text": {"text": [text]}},
+                                    {
+                                        'payload': {
+                                            'richContent': [
+                                                [
+                                                    {
+                                                        "type": "html",
+                                                        "html": html
+                                                    },
+                                                    {
+                                                        "type": "chips",
+                                                        "options": [
+                                                        {
+                                                            "text": "I have uploaded the file"
+                                                        }
+                                                    ]
+                                                    }
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
                 else:
                     text = "Please click on the file name to process."
                     for file in files:
                        options.append({"text": file["name"]})
 
-                json_response = {
-                        'fulfillment_response': {
-                            'messages': [
-                                {"text": {"text": [text]}},
-                                {
-                                    'payload': {
-                                        'richContent': [
-                                            [
-                                                {
-                                                    "type": "chips",
-                                                    "options": options
-                                                }
+                    json_response = {
+                            'fulfillment_response': {
+                                'messages': [
+                                    {"text": {"text": [text]}},
+                                    {
+                                        'payload': {
+                                            'richContent': [
+                                                [
+                                                    {
+                                                        "type": "chips",
+                                                        "options": options
+                                                    }
+                                                ]
                                             ]
-                                        ]
+                                        }
                                     }
-                                }
-                            ]
+                                ]
+                            }
                         }
-                    }
                 return json_response
 
 
