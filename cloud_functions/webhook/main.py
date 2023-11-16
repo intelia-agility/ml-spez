@@ -141,6 +141,22 @@ def webhook(request):
                                             ]
                                         ]
                                     }
+                                },
+                                {
+                                    'payload': {
+                                        "richContent": [
+                                            [
+                                            {
+                                                "type": "chips",
+                                                "options": [
+                                                {
+                                                    "text": "I have uploaded my resume"
+                                                }
+                                                ]
+                                            }
+                                            ]
+                                        ]
+                                    }
                                 }
                             ]
                         }
