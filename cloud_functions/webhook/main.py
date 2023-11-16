@@ -241,7 +241,7 @@ def webhook(request):
                                     {"text": {"text": [text]}},
                                     {
                                         'payload': {
-                                            'richContent': buttons
+                                            'richContent': [buttons]
                                         }
                                     }
                                 ]
