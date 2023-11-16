@@ -224,7 +224,14 @@ def webhook(request):
                     text = "Please click on the file name to process."
                     for file in files:
                         option_text = "Filename: "+file["name"]
-                        options.append({"text": option_text})
+                        options.append({
+                            "type": "chips",
+                            "options": [
+                                {
+                                "text": option_text
+                                }
+                            ]
+                        })
                     json_response = {
                             'fulfillment_response': {
                                 'messages': [
