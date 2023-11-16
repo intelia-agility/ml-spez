@@ -137,23 +137,15 @@ def webhook(request):
                                                 {
                                                     "type": "html",
                                                     "html": html
-                                                }
-                                            ]
-                                        ]
-                                    }
-                                },
-                                {
-                                    'payload': {
-                                        "richContent": [
-                                            [
-                                            {
-                                                "type": "chips",
-                                                "options": [
+                                                },
                                                 {
-                                                    "text": "I have uploaded my resume"
-                                                }
+                                                    "type": "chips",
+                                                    "options": [
+                                                    {
+                                                        "text": "I have uploaded my resume"
+                                                    }
                                                 ]
-                                            }
+                                                }
                                             ]
                                         ]
                                     }
