@@ -87,8 +87,9 @@ def webhook(request):
                     matches_folder_id, matches_folder_link = create_folder("Matching Jobs", session_folder_id)
                     #watch_changes(folder_id)
                     html =  f'''
-                    <p>Please use this folder to upload a copy of your resume and let me know once done.</p>
+                    <p>Please use this folder to upload a copy of your resume.</p>
                     <p><a href="{resume_folder_link}" target="_blank">Upload Your Resume</a></p>
+                    <p>Please click the button below once done.</p>
                     '''
                     json_response = {
                         "sessionInfo": {
@@ -113,6 +114,14 @@ def webhook(request):
                                                 {
                                                     "type": "html",
                                                     "html": html
+                                                },
+                                                {
+                                                    "type": "chips",
+                                                    "options": [
+                                                    {
+                                                        "text": "I have uploaded my resume"
+                                                    }
+                                                ]
                                                 }
                                             ]
                                         ]
@@ -124,8 +133,9 @@ def webhook(request):
                 else:
                     resume_folder_link = session_parameters["resume_folder_link"]
                     html =  f'''
-                    <p>Please use this folder to upload a copy of your resume and let me know once done.</p>
+                    <p>Please use this folder to upload a copy of your resume.</p>
                     <p><a href="{resume_folder_link}" target="_blank">Upload Your Resume</a></p>
+                    <p>Please click the button below once done.</p>
                     '''
                     json_response = {
                         'fulfillment_response': {
