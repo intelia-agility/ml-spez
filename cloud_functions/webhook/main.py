@@ -7,6 +7,23 @@ import google.auth
 import google.auth.transport.requests
 from googleapiclient.errors import HttpError
 
+def get_folder_contents(folder_id):
+
+  try:
+    credentials = get_credentials()
+    service = build('drive', 'v3', credentials=credentials)
+    response = service.files().list(
+        q=f"'{folder_id}' in parents and trashed=false",
+        fields='files(id, name)'
+    ).execute()
+
+    # Print details of each file in the folder
+    files = response.get('files', [])
+    return files
+
+  except HttpError as error:
+    print(f"An error occurred: {error}")
+    return None
 
 
 def create_folder(name, root):
@@ -119,7 +136,7 @@ def webhook(request):
                                                     "type": "chips",
                                                     "options": [
                                                     {
-                                                        "text": "I have uploaded my resume"
+                                                        "text": "I have uploaded the file"
                                                     }
                                                 ]
                                                 }
@@ -152,7 +169,7 @@ def webhook(request):
                                                     "type": "chips",
                                                     "options": [
                                                     {
-                                                        "text": "I have uploaded my resume"
+                                                        "text": "I have uploaded the file"
                                                     }
                                                 ]
                                                 }
@@ -164,5 +181,36 @@ def webhook(request):
                         }
                     }
                 return json_response
+            if tag == "file_uploaded":
+                resume_folder_id = session_parameters["resume_folder_id"]
+                files = get_folder_contents(resume_folder_id)
+                options = []
+                if len(files) == 0:
+                    text = "I was unable to find any files. Please upload a file to the shared folder to continue."
+                else:
+                    text = "Please click on the file name to process."
+                    for file in files:
+                       options.append({"text": file["name"]})
+
+                json_response = {
+                        'fulfillment_response': {
+                            'messages': [
+                                {"text": {"text": [text]}},
+                                {
+                                    'payload': {
+                                        'richContent': [
+                                            [
+                                                {
+                                                    "type": "chips",
+                                                    "options": options
+                                                }
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+
 
     return 'OK'
