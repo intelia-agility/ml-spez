@@ -72,7 +72,7 @@ def webhook(request):
             tag = request_json["fulfillmentInfo"]["tag"]
             if tag == "create_folder":
                 folder_id, public_link = create_folder(session_id)
-                watch_changes(folder_id)
+                #watch_changes(folder_id)
                 html =  f'''
                 <p>Please use this folder to upload a copy of your resume and let me know once done.</p>
                 <p><a href="{public_link}" target="_blank">Upload Your Resume</a></p>
