@@ -2,11 +2,21 @@ import functions_framework
 import os
 import re
 import uuid
+import textract
 from googleapiclient.discovery import build
 import google.auth
 import google.auth.transport.requests
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
+
+def get_txt(path):
+    try:
+        text = textract.process(path)
+        text = text.decode("utf8")
+        return text
+    except Exception as e:
+        print(e.message)
+        return None
 
 def download_file(folder_id,file_name):
 	try:
@@ -32,6 +42,7 @@ def download_file(folder_id,file_name):
 				_, done = downloader.next_chunk()
 
 		print(f"File downloaded to: {file_path}")
+		return file_path
 	except HttpError as error:
 		print(f"An error occurred: {error}")
 		return None
@@ -295,7 +306,10 @@ def webhook(request):
 					if parameter["displayName"] == "files_displayed" and parameter["value"] == True:
 						file_name = request_json["text"][10:]
 						resume_folder_id = session_parameters["resume_folder_id"]
-						download_file(resume_folder_id, file_name)
+						file_path = download_file(resume_folder_id, file_name)
+						if file_path:
+							text = get_txt(file_path)
 						print("event is file confirmed, filename: ", file_name)
+						print("Text is: ", text)
 
 	return 'OK'
