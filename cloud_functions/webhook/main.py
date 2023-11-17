@@ -6,6 +6,35 @@ from googleapiclient.discovery import build
 import google.auth
 import google.auth.transport.requests
 from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaIoBaseDownload
+
+def download_file(folder_id,file_name):
+	try:
+		credentials = get_credentials()
+		service = build('drive', 'v3', credentials=credentials)
+		response = service.files().list(
+			q=f"'{folder_id}' in parents and trashed=false",
+			fields='files(id, name)'
+		).execute()
+
+		# Print details of each file in the folder
+		files = response.get('files', [])
+		for file in files:
+			if file["name"] == file_name:
+				file_id = file["id"]
+		# Download the file
+		request = service.files().get_media(fileId=file_id)
+		file_path = f"tmp/{file_name}"
+		with open(file_path, 'wb') as file:
+			downloader = MediaIoBaseDownload(file, request)
+			done = False
+			while done is False:
+				_, done = downloader.next_chunk()
+
+		print(f"File downloaded to: {file_path}")
+	except HttpError as error:
+		print(f"An error occurred: {error}")
+		return None
 
 def get_folder_contents(folder_id):
 
@@ -265,6 +294,8 @@ def webhook(request):
 				for parameter in page_parameters:
 					if parameter["displayName"] == "files_displayed" and parameter["value"] == True:
 						file_name = request_json["text"][10:]
+						resume_folder_id = session_parameters["resume_folder_id"]
+						download_file(resume_folder_id, file_name)
 						print("event is file confirmed, filename: ", file_name)
 
 	return 'OK'
