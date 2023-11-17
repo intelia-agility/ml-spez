@@ -24,7 +24,7 @@ def download_file(folder_id,file_name):
 				file_id = file["id"]
 		# Download the file
 		request = service.files().get_media(fileId=file_id)
-		file_path = f"tmp/{file_name}"
+		file_path = os.path.join("/tmp/", file_name)
 		with open(file_path, 'wb') as file:
 			downloader = MediaIoBaseDownload(file, request)
 			done = False
