@@ -3,11 +3,27 @@ import os
 import re
 import uuid
 import textract
+import en_core_web_sm
 from googleapiclient.discovery import build
 import google.auth
 import google.auth.transport.requests
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
+
+def get_sentences(text):
+	text = text.replace('\n', ' ').replace('\r', '')
+	nlp = en_core_web_sm.load()
+	doc = nlp(text)
+	return_sentences = []
+	for sent in doc.sents:
+		string_sentence = str(sent)
+		string_sentence = re.sub("\s\s+", " ", string_sentence)
+		if string_sentence != " ":
+			#print("Sentence: ", string_sentence)
+			return_sentences.append(string_sentence)
+	print('Total number of sentences: ', len(return_sentences))
+	return_text = ('\n').join(return_sentences)
+	return return_text
 
 def get_txt(path):
     try:
@@ -309,7 +325,10 @@ def webhook(request):
 						file_path = download_file(resume_folder_id, file_name)
 						if file_path:
 							text = get_txt(file_path)
-						print("event is file confirmed, filename: ", file_name)
-						print("Text is: ", text)
+
+						if text:
+							content = get_sentences(text)
+							print("event is file confirmed, filename: ", file_name)
+							print("Content: ", content)
 
 	return 'OK'
