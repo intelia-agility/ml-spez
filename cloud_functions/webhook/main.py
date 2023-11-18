@@ -4,11 +4,46 @@ import re
 import uuid
 import textract
 import en_core_web_sm
+import requests
 from googleapiclient.discovery import build
 import google.auth
 import google.auth.transport.requests
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
+
+def get_token_count(prompt,model):
+	request_body = {
+	"instances": [
+		{ "prompt": prompt}
+	],
+	}
+	endpoint = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/ml-spez-ccai/locations/us-central1/publishers/google/models/{model}countTokens"
+	access_token = get_default_token()
+	auth = "Bearer " + access_token
+
+	# Create the headers with the Authorization header
+	headers = {
+		'Authorization': auth,
+		'Content-Type': 'application/json; charset=utf-8'
+	}
+
+	# Send the POST request with JSON data
+	response = requests.post(endpoint, headers=headers, json=request_body)
+
+	if response.status_code == 200:
+		print('Response content:', response.json())
+	else:
+		print(response)
+		print(f'POST request failed with status code {response.status_code}')
+
+def get_default_token():
+	CREDENTIAL_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
+	credentials, project_id = google.auth.default(scopes=CREDENTIAL_SCOPES)
+	request = google.auth.transport.requests.Request()
+	credentials.refresh(request)
+	access_token = credentials.token
+	print('Access token: ', access_token)
+	return credentials.token
 
 def get_sentences(text):
 	text = text.replace('\n', ' ').replace('\r', '')
@@ -325,10 +360,9 @@ def webhook(request):
 						file_path = download_file(resume_folder_id, file_name)
 						if file_path:
 							text = get_txt(file_path)
-
 						if text:
 							content = get_sentences(text)
 							print("event is file confirmed, filename: ", file_name)
-							print("Content: ", content)
+							get_token_count(content,"textembedding-gecko")
 
 	return 'OK'
