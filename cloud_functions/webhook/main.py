@@ -29,7 +29,7 @@ def get_token_count(prompt,model):
 
 	# Send the POST request with JSON data
 	response = requests.post(endpoint, headers=headers, json=request_body)
-
+	print(response)
 	if response.status_code == 200:
 		print('Response content:', response.json())
 	else:
