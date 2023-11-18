@@ -12,12 +12,19 @@ import google.auth.transport.requests
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 
-def get_token_count(prompt,model):
-	body = {
-	"instances": [
-		{ "prompt": prompt}
-	],
-	}
+def get_token_count(content,model):
+	if model == "textembedding-gecko":
+		body = {
+		"instances": [
+			{ "content": content}
+		],
+		}
+	else:
+		body = {
+		"instances": [
+			{ "prompt": content}
+		],
+		}
 	request_body = json.dumps(body)
 	endpoint = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/ml-spez-ccai/locations/us-central1/publishers/google/models/{model}:countTokens"
 	access_token = get_default_token()
