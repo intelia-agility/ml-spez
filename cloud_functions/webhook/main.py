@@ -2,6 +2,7 @@ import functions_framework
 import os
 import re
 import uuid
+import json
 import textract
 import en_core_web_sm
 import requests
@@ -12,11 +13,12 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 
 def get_token_count(prompt,model):
-	request_body = {
+	body = {
 	"instances": [
 		{ "prompt": prompt}
 	],
 	}
+	request_body = json.dumps(body)
 	endpoint = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/ml-spez-ccai/locations/us-central1/publishers/google/models/{model}:countTokens"
 	access_token = get_default_token()
 	auth = "Bearer " + access_token
@@ -28,8 +30,8 @@ def get_token_count(prompt,model):
 	}
 
 	# Send the POST request with JSON data
-	response = requests.post(endpoint, headers=headers, json=request_body)
-	print(response)
+	response = requests.post(endpoint, headers=headers, data=request_body)
+	#print(response)
 	if response.status_code == 200:
 		print('Response content:', response.json())
 	else:
