@@ -11,6 +11,29 @@ import google.auth
 import google.auth.transport.requests
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
+from google.cloud import aiplatform
+from vertexai.preview.language_models import TextEmbeddingModel
+
+def get_matches(vector):
+	aiplatform.init(project="ml-spez-ccai", location="us-central1")
+	my_index_endpoint = aiplatform.MatchingEngineIndexEndpoint(index_endpoint_name='8350381794633187328')
+	response = my_index_endpoint.find_neighbors(
+		deployed_index_id = "job_posting_deployed_index",
+		queries = [vector],
+		num_neighbors = 10
+	)
+	# show the results
+
+	print(response[0])
+
+def get_text_embedding(text) -> list:
+    """Text embedding with a Large Language Model."""
+    model = TextEmbeddingModel.from_pretrained("textembedding-gecko")
+    embeddings = model.get_embeddings([text])
+    for embedding in embeddings:
+        vector = embedding.values
+        print(f"Length of Embedding Vector: {len(vector)}")
+    return vector
 
 def get_token_count(content,model):
 	if model == "textembedding-gecko":
@@ -40,10 +63,13 @@ def get_token_count(content,model):
 	response = requests.post(endpoint, headers=headers, data=request_body)
 	#print(response)
 	if response.status_code == 200:
-		print('Response content:', response.json())
+		response_json = response.json()
+		print('Response content:', response_json)
+		return int(response_json["totalTokens"])
 	else:
 		print(response)
 		print(f'POST request failed with status code {response.status_code}')
+		return None
 
 def get_default_token():
 	CREDENTIAL_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
@@ -372,6 +398,10 @@ def webhook(request):
 						if text:
 							content = get_sentences(text)
 							print("event is file confirmed, filename: ", file_name)
-							get_token_count(content,"textembedding-gecko")
+							token_count = get_token_count(content,"textembedding-gecko")
+							if token_count and token_count<3072:
+								vector = get_text_embedding(text)
+								get_matches(vector)
+
 
 	return 'OK'
