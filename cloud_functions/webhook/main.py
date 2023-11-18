@@ -17,7 +17,7 @@ def get_token_count(prompt,model):
 		{ "prompt": prompt}
 	],
 	}
-	endpoint = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/ml-spez-ccai/locations/us-central1/publishers/google/models/{model}countTokens"
+	endpoint = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/ml-spez-ccai/locations/us-central1/publishers/google/models/{model}:countTokens"
 	access_token = get_default_token()
 	auth = "Bearer " + access_token
 
