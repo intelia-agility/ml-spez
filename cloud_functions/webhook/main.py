@@ -99,7 +99,7 @@ def get_job(job_id):
 	FROM
 	`{jobs_table_id}`
 	WHERE
-	job_id = {job_id}
+	job_id = "{job_id}"
 	'''
 	query_job = client.query(query)
 	result_data = []
