@@ -488,16 +488,15 @@ def webhook(request):
 											"title": job["title"],
 											"subtitle": job["location"],
 											"text": text
-										},
-										{
+										})
+									options.append({
 											"type": "chips",
 											"options": [
 												{
 												"text": option_text
 												}
 											]
-										}
-									)
+										})
 								json_response = {
 									'fulfillment_response': {
 										'messages': [
