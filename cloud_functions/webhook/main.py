@@ -57,12 +57,12 @@ def save_job(job_details,file_name,folder_id):
 	if job_details["min_salary"]:
 		min_salary_para = doc.add_paragraph()
 		min_salary_para.add_run('Minimum Salary: ').bold = True
-		min_salary_para.add_run(job_details["min_salary"])
+		min_salary_para.add_run(str(job_details["min_salary"]))
 
 	if job_details["max_salary"]:
 		max_salary_para = doc.add_paragraph()
 		max_salary_para.add_run('Maximum Salary: ').bold = True
-		max_salary_para.add_run(job_details["max_salary"])
+		max_salary_para.add_run(str(job_details["max_salary"]))
 
 	if job_details["pay_period"]:
 		pay_period_para = doc.add_paragraph()
@@ -70,7 +70,7 @@ def save_job(job_details,file_name,folder_id):
 		pay_period_para.add_run(job_details["pay_period"])
 
 	stats_para = doc.add_paragraph()
-	stats_text = f"{job_details.get('views',0)} Views {job_details.get('applies',0)} Applies"
+	stats_text = f"{str(job_details.get('views',0))} Views {str(job_details.get('applies',0))} Applies"
 	stats_para.add_run(stats_text)
 
 	doc.add_heading('Job Description', level=4)
