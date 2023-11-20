@@ -445,16 +445,16 @@ def webhook(request):
 								options = []
 								text = ''
 								for job in job_details:
-									match_percent = round(float(matches[job["job_id"])*100, 2)
+									match_percent = round(float(matches[job["job_id"]])*100, 2)
 									text = f"Profile Match: {match_percent}%"
 									if job.formatted_work_type:
-										text = text + f"\nWork Type: {job["formatted_work_type"]}"
+										text = text + f"\nWork Type: {job['formatted_work_type']}"
 									if job.min_salary:
-										text = text + f"\nMinimum Salary: {job["min_salary"]}"
+										text = text + f"\nMinimum Salary: {job['min_salary']}"
 									if job.max_salary:
-										text = text + f"\nMaximum Salary: {job["max_salary"]}"
+										text = text + f"\nMaximum Salary: {job['max_salary']}"
 									if job.pay_period:
-										text = text + f"\nPay Period: {job["pay_period"]}"
+										text = text + f"\nPay Period: {job['pay_period']}"
 
 									options.append(
 										{
