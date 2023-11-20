@@ -624,7 +624,7 @@ def webhook(request):
 				job_details = get_job(job_id)
 				matches_folder_id = session_parameters["matches_folder_id"]
 				matches_folder_link = session_parameters["matches_folder_link"]
-				save_job(job_details,job_name,matches_folder_link)
+				save_job(job_details,job_name,matches_folder_id)
 				html =  f'''
 				<p>The job details for {job_name} have been saved to Google Drive.</p>
 				<p><a href="{matches_folder_link}" target="_blank">Access Link</a></p>
