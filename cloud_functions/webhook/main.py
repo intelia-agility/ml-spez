@@ -6,18 +6,81 @@ import json
 import textract
 import en_core_web_sm
 import requests
+from datetime import datetime
 from google.cloud import bigquery
 from googleapiclient.discovery import build
 import google.auth
 import google.auth.transport.requests
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
+from googleapiclient.http import MediaFileUpload
 from google.cloud import aiplatform
 from vertexai.preview.language_models import TextEmbeddingModel
+from docx import Document
 
-def get_job_details(matches):
-	print("In BigQuery: ", matches)
-	job_ids = list(matches.keys())
+def upload_file(file_name,folder_id,local_path):
+	try:
+		credentials = get_credentials()
+		service = build('drive', 'v3', credentials=credentials)
+		file_metadata = {
+			'name': file_name,
+			'parents': [folder_id]
+		}
+		media = MediaFileUpload(local_path, mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+		file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+		return True
+	except HttpError as error:
+		print(f"An error occurred: {error}")
+		return None
+
+def save_job(job_details,file_name,folder_id):
+	current_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+	doc = Document()
+	section = doc.sections[0]
+	header = section.header
+	footer = section.footer
+	h_paragraph = header.paragraphs[0]
+	f_paragraph = footer.paragraphs[0]
+	h_paragraph.text = "Welcome to intelia ML Spez Demo"
+	f_paragraph.text = f"Generated at {current_timestamp}."
+	doc.add_heading(job_details["title"], 0)
+	doc.add_heading('Job Details', level=4)
+
+	type_para = doc.add_paragraph()
+	type_para.add_run('Work Type: ').bold = True
+	type_para.add_run(job_details["formatted_work_type"])
+
+	location_para = doc.add_paragraph()
+	location_para.add_run('Location: ').bold = True
+	location_para.add_run(job_details["location"])
+
+	if job_details["min_salary"]:
+		min_salary_para = doc.add_paragraph()
+		min_salary_para.add_run('Minimum Salary: ').bold = True
+		min_salary_para.add_run(job_details["min_salary"])
+
+	if job_details["max_salary"]:
+		max_salary_para = doc.add_paragraph()
+		max_salary_para.add_run('Maximum Salary: ').bold = True
+		max_salary_para.add_run(job_details["max_salary"])
+
+	if job_details["pay_period"]:
+		pay_period_para = doc.add_paragraph()
+		pay_period_para.add_run('Pay Period: ').bold = True
+		pay_period_para.add_run(job_details["pay_period"])
+
+	stats_para = doc.add_paragraph()
+	stats_text = f"{job_details.get('views',0)} Views {job_details.get('applies',0)} Applies"
+	stats_para.add_paragraph(stats_text)
+
+	doc.add_heading('Job Description', level=4)
+	doc.add_paragraph(job_details["description"])
+
+	doc_path = "/tmp/"+file_name
+	doc.save(doc_path)
+	upload_file(file_name,folder_id,doc_path)
+
+def get_job(job_id):
 	jobs_table_id = os.environ.get("JOBS_TABLE_ID")
 	client = bigquery.Client()
 	query = f'''
@@ -31,6 +94,39 @@ def get_job_details(matches):
 	pay_period,
 	views,
 	applies,
+	location,
+	job_posting_url
+	FROM
+	`{jobs_table_id}`
+	WHERE
+	job_id = {job_id}
+	'''
+	query_job = client.query(query)
+	result_data = []
+	try:
+		results = query_job.result()  # Waits for job to complete.
+		for result in results:
+			result_data.append(dict(result))
+		return result_data[0]
+	except Exception as e:
+		if hasattr(e, 'message'):
+			print('Unable to get BigQuery results: ' + e.message)
+		else:
+			print('Unable to get BigQuery results: ' + str(e))
+
+
+def get_job_details(matches):
+	job_ids = list(matches.keys())
+	jobs_table_id = os.environ.get("JOBS_TABLE_ID")
+	client = bigquery.Client()
+	query = f'''
+	SELECT
+	job_id,
+	title,
+	formatted_work_type,
+	max_salary,
+	min_salary,
+	pay_period,
 	location
 	FROM
 	`{jobs_table_id}`
@@ -471,16 +567,16 @@ def webhook(request):
 								text = ''
 								for job in job_details:
 									match_percent = job['match_percent']
-									option_text = f"Export: {job['title']}"
+									option_text = f"Export: {job['title']} id:{job['job_id']}"
 									text = f"Profile Match: {match_percent}%"
 									if job['formatted_work_type']:
-										text = text + f"\nWork Type: {job['formatted_work_type']}"
+										text = text + f", Work Type: {job['formatted_work_type']}"
 									if job['min_salary']:
-										text = text + f"\nMinimum Salary: {job['min_salary']}"
+										text = text + f", Minimum Salary: {job['min_salary']}"
 									if job['max_salary']:
-										text = text + f"\nMaximum Salary: {job['max_salary']}"
+										text = text + f", Maximum Salary: {job['max_salary']}"
 									if job['pay_period']:
-										text = text + f"\nPay Period: {job['pay_period']}"
+										text = text + f", Pay Period: {job['pay_period']}"
 
 									options.append(
 										{
@@ -498,6 +594,18 @@ def webhook(request):
 											]
 										})
 								json_response = {
+									"page_info": {
+												"form_info": {
+													"parameter_info": [
+														{
+															"displayName": "results_displayed",
+															"required": False,
+															"state": "VALID",
+															"value": True,
+														},
+													],
+												},
+											},
 									'fulfillment_response': {
 										'messages': [
 											{"text": {"text": ["Here are a few matches, please click on 'Export' to save the detailed descriptions."]}},
@@ -510,7 +618,36 @@ def webhook(request):
 									}
 								}
 				return json_response
-
+			if tag == "job_export":
+				job_id = request_json["text"].split("id:")[1]
+				job_name = request_json["text"]
+				job_details = get_job(job_id)
+				matches_folder_id = session_parameters["matches_folder_id"]
+				matches_folder_link = session_parameters["matches_folder_link"]
+				save_job(job_details,job_name,matches_folder_link)
+				html =  f'''
+				<p>The job details for {job_name} have been saved to Google Drive.</p>
+				<p><a href="{matches_folder_link}" target="_blank">Access Link</a></p>
+				'''
+				json_response = {
+						'fulfillment_response': {
+							'messages': [
+								{
+									'payload': {
+										'richContent': [
+											[
+												{
+													"type": "html",
+													"html": html
+												}
+											]
+										]
+									}
+								}
+							]
+						}
+					}
+				return json_response
 
 
 	return 'OK'
