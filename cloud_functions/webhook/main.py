@@ -266,6 +266,27 @@ def webhook(request):
 			page_parameters = []
 		if "fulfillmentInfo" in request_json and "tag" in request_json["fulfillmentInfo"] and session_id:
 			tag = request_json["fulfillmentInfo"]["tag"]
+			if tag == "init_folders":
+				session_folder_id, session_folder_link = create_folder(session_id, root_folder_id)
+				resume_folder_id, resume_folder_link = create_folder("Resumes", session_folder_id)
+				cl_folder_id, cl_folder_link = create_folder("Cover Letters", session_folder_id)
+				matches_folder_id, matches_folder_link = create_folder("Matching Jobs", session_folder_id)
+				json_response = {
+					"sessionInfo": {
+						"parameters": {
+							"folders_created": True,
+							"session_folder_id": session_folder_id,
+							"session_folder_link": session_folder_link,
+							"resume_folder_id": resume_folder_id,
+							"resume_folder_link": resume_folder_link,
+							"cl_folder_id": cl_folder_id,
+							"cl_folder_link": cl_folder_link,
+							"matches_folder_id": matches_folder_id,
+							"matches_folder_link": matches_folder_link
+						},
+					},
+				}
+				return json_response
 			if tag == "create_folder":
 				if "folders_created" not in session_parameters:
 					session_folder_id, session_folder_link = create_folder(session_id, root_folder_id)
@@ -447,13 +468,13 @@ def webhook(request):
 								for job in job_details:
 									match_percent = round(float(matches[job["job_id"]])*100, 2)
 									text = f"Profile Match: {match_percent}%"
-									if job.formatted_work_type:
+									if job['formatted_work_type']:
 										text = text + f"\nWork Type: {job['formatted_work_type']}"
-									if job.min_salary:
+									if job['min_salary']:
 										text = text + f"\nMinimum Salary: {job['min_salary']}"
-									if job.max_salary:
+									if job['max_salary']:
 										text = text + f"\nMaximum Salary: {job['max_salary']}"
-									if job.pay_period:
+									if job['pay_period']:
 										text = text + f"\nPay Period: {job['pay_period']}"
 
 									options.append(
