@@ -18,6 +18,16 @@ from google.cloud import aiplatform
 from vertexai.preview.language_models import TextEmbeddingModel
 from docx import Document
 
+def delete_folders(folder_id):
+	try:
+		credentials = get_credentials()
+		service = build('drive', 'v3', credentials=credentials)
+		service.files().delete(fileId=folder_id).execute()
+		return True
+	except HttpError as error:
+		print(f"An error occurred: {error}")
+		return None
+
 def upload_file(file_name,folder_id,local_path):
 	try:
 		credentials = get_credentials()
@@ -368,26 +378,27 @@ def webhook(request):
 		if "fulfillmentInfo" in request_json and "tag" in request_json["fulfillmentInfo"] and session_id:
 			tag = request_json["fulfillmentInfo"]["tag"]
 			if tag == "init_folders":
-				session_folder_id, session_folder_link = create_folder(session_id, root_folder_id)
-				resume_folder_id, resume_folder_link = create_folder("Resumes", session_folder_id)
-				cl_folder_id, cl_folder_link = create_folder("Cover Letters", session_folder_id)
-				matches_folder_id, matches_folder_link = create_folder("Matching Jobs", session_folder_id)
-				json_response = {
-					"sessionInfo": {
-						"parameters": {
-							"folders_created": True,
-							"session_folder_id": session_folder_id,
-							"session_folder_link": session_folder_link,
-							"resume_folder_id": resume_folder_id,
-							"resume_folder_link": resume_folder_link,
-							"cl_folder_id": cl_folder_id,
-							"cl_folder_link": cl_folder_link,
-							"matches_folder_id": matches_folder_id,
-							"matches_folder_link": matches_folder_link
+				if "folders_created" not in session_parameters:
+					session_folder_id, session_folder_link = create_folder(session_id, root_folder_id)
+					resume_folder_id, resume_folder_link = create_folder("Resumes", session_folder_id)
+					cl_folder_id, cl_folder_link = create_folder("Cover Letters", session_folder_id)
+					matches_folder_id, matches_folder_link = create_folder("Matching Jobs", session_folder_id)
+					json_response = {
+						"sessionInfo": {
+							"parameters": {
+								"folders_created": True,
+								"session_folder_id": session_folder_id,
+								"session_folder_link": session_folder_link,
+								"resume_folder_id": resume_folder_id,
+								"resume_folder_link": resume_folder_link,
+								"cl_folder_id": cl_folder_id,
+								"cl_folder_link": cl_folder_link,
+								"matches_folder_id": matches_folder_id,
+								"matches_folder_link": matches_folder_link
+							},
 						},
-					},
-				}
-				return json_response
+					}
+					return json_response
 			if tag == "create_folder":
 				if "folders_created" not in session_parameters:
 					session_folder_id, session_folder_link = create_folder(session_id, root_folder_id)
@@ -621,7 +632,7 @@ def webhook(request):
 				return json_response
 			if tag == "job_export":
 				job_id = request_json["text"].split("id:")[1]
-				job_name = request_json["text"]
+				job_name = request_json["text"][8:]
 				job_details = get_job(job_id)
 				matches_folder_id = session_parameters["matches_folder_id"]
 				matches_folder_link = session_parameters["matches_folder_link"]
@@ -650,6 +661,17 @@ def webhook(request):
 							}
 						}
 					return json_response
-
+			if tag == "delete_folders":
+				session_folder_id = session_parameters["session_folder_id"]
+				folders_deleted = delete_folders(session_folder_id)
+				if folders_deleted:
+					json_response = {
+							'fulfillment_response': {
+								'messages': [
+									{"text": {"text": ["All the data has been deleted! Hope to hear from you again."]}},
+								]
+							}
+						}
+					return json_response
 
 	return 'OK'
