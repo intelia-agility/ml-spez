@@ -42,8 +42,12 @@ def get_job_details(matches):
 	try:
 		results = query_job.result()  # Waits for job to complete.
 		for result in results:
-			result_data.append(dict(result))
-		return result_data
+			result_dict = dict(result)
+			match_percent = round(float(matches[result_dict["job_id"]])*100, 2)
+			result_dict["match_percent"] = match_percent
+			result_data.append(result_dict)
+		sorted_results = sorted(result_data, key=lambda x: x['match_percent'], reverse=True)
+		return sorted_results
 	except Exception as e:
 		if hasattr(e, 'message'):
 			print('Unable to get BigQuery results: ' + e.message)
@@ -466,7 +470,8 @@ def webhook(request):
 								options = []
 								text = ''
 								for job in job_details:
-									match_percent = round(float(matches[job["job_id"]])*100, 2)
+									match_percent = job['match_percent']
+									option_text = f"Export: {job['title']}"
 									text = f"Profile Match: {match_percent}%"
 									if job['formatted_work_type']:
 										text = text + f"\nWork Type: {job['formatted_work_type']}"
@@ -483,11 +488,20 @@ def webhook(request):
 											"title": job["title"],
 											"subtitle": job["location"],
 											"text": text
+										},
+										{
+											"type": "chips",
+											"options": [
+												{
+												"text": option_text
+												}
+											]
 										}
 									)
 								json_response = {
 									'fulfillment_response': {
 										'messages': [
+											{"text": {"text": ["Here are a few matches, please click on 'Export' to save the detailed descriptions."]}},
 											{
 												'payload': {
 													'richContent': [options]
