@@ -6,6 +6,7 @@ import json
 import textract
 import en_core_web_sm
 import requests
+from google.cloud import bigquery
 from googleapiclient.discovery import build
 import google.auth
 import google.auth.transport.requests
@@ -14,7 +15,42 @@ from googleapiclient.http import MediaIoBaseDownload
 from google.cloud import aiplatform
 from vertexai.preview.language_models import TextEmbeddingModel
 
+def get_job_details(matches):
+	job_ids = matches.keys()
+	jobs_table_id = os.environ.get("JOBS_TABLE_ID")
+	client = bigquery.Client()
+	query = f'''
+	SELECT
+	job_id,
+	title,
+	formatted_work_type,
+	description,
+	max_salary,
+	min_salary,
+	pay_period,
+	views,
+	applies,
+	location
+	FROM
+	`{jobs_table_id}`
+	WHERE
+	job_id IN UNNEST({job_ids})
+	'''
+	query_job = client.query(query)
+	result_data = []
+	try:
+		results = query_job.result()  # Waits for job to complete.
+		for result in results:
+			result_data.append(dict(result))
+		return result_data
+	except Exception as e:
+		if hasattr(e, 'message'):
+			print('Unable to get BigQuery results: ' + e.message)
+		else:
+			print('Unable to get BigQuery results: ' + str(e))
+
 def get_matches(vector):
+	match_threshold = os.environ.get("MATCH_THRESHOLD")
 	aiplatform.init(project="ml-spez-ccai", location="us-central1")
 	my_index_endpoint = aiplatform.MatchingEngineIndexEndpoint(index_endpoint_name='8350381794633187328')
 	response = my_index_endpoint.find_neighbors(
@@ -22,9 +58,12 @@ def get_matches(vector):
 		queries = [vector],
 		num_neighbors = 10
 	)
-	# show the results
-
-	print(response[0])
+	matches = {}
+	if len(response[0])>0:
+		for id, neighbor in enumerate(response[0]):
+			if neighbor.distance>= float(match_threshold):
+				matches[neighbor.id] = neighbor.distance
+	return matches
 
 def get_text_embedding(text) -> list:
     """Text embedding with a Large Language Model."""
@@ -397,11 +436,46 @@ def webhook(request):
 							text = get_txt(file_path)
 						if text:
 							content = get_sentences(text)
-							print("event is file confirmed, filename: ", file_name)
 							token_count = get_token_count(content,"textembedding-gecko")
 							if token_count and token_count<3072:
 								vector = get_text_embedding(text)
-								get_matches(vector)
+								matches = get_matches(vector)
+								job_details = get_job_details(matches)
+								options = []
+								text = ''
+								for job in job_details:
+									match_percent = round(float(matches[job.job_id])*100, 2)
+									text = f"Profile Match: {match_percent}%"
+									if job.formatted_work_type:
+										text = text + f"\nWork Type: {job.formatted_work_type}"
+									if job.min_salary:
+										text = text + f"\nMinimum Salary: {job.min_salary}"
+									if job.max_salary:
+										text = text + f"\nMaximum Salary: {job.max_salary}"
+									if job.pay_period:
+										text = text + f"\nPay Period: {job.pay_period}"
+
+									options.append(
+										{
+											"type": "accordion",
+											"title": job.title,
+											"subtitle": job.location,
+											"text": text
+										}
+									)
+								json_response = {
+									'fulfillment_response': {
+										'messages': [
+											{
+												'payload': {
+													'richContent': [options]
+												}
+											}
+										]
+									}
+								}
+
+
 
 
 	return 'OK'
