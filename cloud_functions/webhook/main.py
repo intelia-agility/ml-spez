@@ -16,7 +16,7 @@ from google.cloud import aiplatform
 from vertexai.preview.language_models import TextEmbeddingModel
 
 def get_job_details(matches):
-	job_ids = matches.keys()
+	job_ids = list(matches.keys())
 	jobs_table_id = os.environ.get("JOBS_TABLE_ID")
 	client = bigquery.Client()
 	query = f'''
