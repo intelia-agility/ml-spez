@@ -71,7 +71,7 @@ def save_job(job_details,file_name,folder_id):
 
 	stats_para = doc.add_paragraph()
 	stats_text = f"{job_details.get('views',0)} Views {job_details.get('applies',0)} Applies"
-	stats_para.add_paragraph(stats_text)
+	stats_para.add_run(stats_text)
 
 	doc.add_heading('Job Description', level=4)
 	doc.add_paragraph(job_details["description"])
