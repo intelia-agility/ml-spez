@@ -670,6 +670,82 @@ def webhook(request):
 							}
 						}
 					return json_response
+			if tag == "cl_select_resume":
+				resume_folder_id = session_parameters["resume_folder_id"]
+				files = get_folder_contents(resume_folder_id)
+				if len(files) == 0:
+					text = "I was unable to find any Resumes."
+					json_response = {
+							'fulfillment_response': {
+								'messages': [
+									{"text": {"text": [text]}}
+								]
+							}
+						}
+				else:
+					options = []
+					text = "Please click on the file name to select the Resume."
+					for file in files:
+						option_text = "Filename: "+file["name"]
+						options.append({
+							"type": "chips",
+							"options": [
+								{
+								"text": option_text
+								}
+							]
+						})
+					json_response = {
+							'fulfillment_response': {
+								'messages': [
+									{"text": {"text": [text]}},
+									{
+										'payload': {
+											'richContent': [options]
+										}
+									}
+								]
+							}
+						}
+				return json_response
+			if tag == "cl_select_job":
+				matches_folder_id = session_parameters["matches_folder_id"]
+				files = get_folder_contents(matches_folder_id)
+				if len(files) == 0:
+					text = "I was unable to find any matching jobs."
+					json_response = {
+							'fulfillment_response': {
+								'messages': [
+									{"text": {"text": [text]}}
+								]
+							}
+						}
+				else:
+					options = []
+					text = "Please click on the file name to select the job."
+					for file in files:
+						option_text = "Filename: "+file["name"]
+						options.append({
+							"type": "chips",
+							"options": [
+								{
+								"text": option_text
+								}
+							]
+						})
+					json_response = {
+							'fulfillment_response': {
+								'messages': [
+									{"text": {"text": [text]}},
+									{
+										'payload': {
+											'richContent': [options]
+										}
+									}
+								]
+							}
+						}
+				return json_response
 			if tag == "delete_folders":
 				session_folder_id = session_parameters["session_folder_id"]
 				folders_deleted = delete_folders(session_folder_id)
