@@ -25,8 +25,8 @@ def generate_cover_letter(resume_text,job_text):
 		vertexai.init(project="ml-spez-ccai", location="us-central1")
 		parameters = {
 			"max_output_tokens": 8192,
-			"temperature": 0.2,
-			"top_p": 0.8,
+			"temperature": 0.0,
+			"top_p": 0.95,
 			"top_k": 40
 		}
 		model = TextGenerationModel.from_pretrained("text-bison-32k")
@@ -34,8 +34,8 @@ def generate_cover_letter(resume_text,job_text):
 		{resume_text}
 		Given a job opening with text:
 		{job_text}
-		Write a cover letter for the job opening on behalf of the candidate."""
-		print("Prompt: ",prompt)
+		Write a cover letter for the job opening on behalf of the candidate. Use relevant information from the cadidate's resume to generate the letter, do not add fictional information."""
+		print("job_text: ",job_text)
 		response = model.predict(prompt,**parameters)
 		print(f"Response from Model: {response.text}")
 		return response.text
@@ -838,7 +838,7 @@ def webhook(request):
 					job_text = get_txt_pdf(job_path)
 
 				cl_text = generate_cover_letter(resume_text,job_text)
-				cl_file_name = job_name + "-" + resume_name
+				cl_file_name = job_name.split(".docx")[0]
 				upload_success = save_cl(cl_text,cl_file_name,cl_folder_id)
 				if upload_success:
 					html =  f'''
