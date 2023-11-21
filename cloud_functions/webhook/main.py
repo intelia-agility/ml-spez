@@ -35,6 +35,7 @@ def generate_cover_letter(resume_text,job_text):
 		Given a job opening with text:
 		{job_text}
 		Write a cover letter for the job opening on behalf of the candidate."""
+		print("Prompt: ",prompt)
 		response = model.predict(prompt,**parameters)
 		print(f"Response from Model: {response.text}")
 		return response.text
