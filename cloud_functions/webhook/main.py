@@ -641,6 +641,7 @@ def webhook(request):
 					html =  f'''
 					<p>The job details for {job_name} have been saved to Google Drive.</p>
 					<p><a href="{matches_folder_link}" target="_blank">Access Link</a></p>
+					<p>I can also draft a cover letter for any of the exported jobs.</p>
 					'''
 					json_response = {
 							'fulfillment_response': {
@@ -652,6 +653,14 @@ def webhook(request):
 													{
 														"type": "html",
 														"html": html
+													},
+													{
+														"type": "chips",
+														"options": [
+															{
+															"text": "Help me create a cover letter."
+															}
+														]
 													}
 												]
 											]
