@@ -15,8 +15,35 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.http import MediaFileUpload
 from google.cloud import aiplatform
+import vertexai
 from vertexai.preview.language_models import TextEmbeddingModel
+from vertexai.preview.language_models import TextGenerationModel
 from docx import Document
+
+def generate_cover_letter(resume_text,job_text):
+	try:
+		vertexai.init(project="ml-spez-ccai", location="us-central1")
+		parameters = {
+			"max_output_tokens": 8192,
+			"temperature": 0.2,
+			"top_p": 0.8,
+			"top_k": 40
+		}
+		model = TextGenerationModel.from_pretrained("text-bison-32k")
+		prompt = f"""Given a candidate\'s resume with text:
+		{resume_text}
+		Given a job opening with text:
+		{job_text}
+		Write a cover letter for the job opening on behalf of the candidate."""
+		response = model.predict(prompt,**parameters)
+		print(f"Response from Model: {response.text}")
+		return response.text
+	except Exception as e:
+		if hasattr(e, 'message'):
+			print('Error: ' + e.message)
+		else:
+			print('Error: ' + str(e))
+		return None
 
 def delete_folders(folder_id):
 	try:
@@ -43,9 +70,26 @@ def upload_file(file_name,folder_id,local_path):
 		print(f"An error occurred: {error}")
 		return None
 
+def save_cl(text,file_name,folder_id):
+	file_name = file_name+".docx"
+	current_timestamp = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+	doc = Document()
+	section = doc.sections[0]
+	header = section.header
+	footer = section.footer
+	h_paragraph = header.paragraphs[0]
+	f_paragraph = footer.paragraphs[0]
+	h_paragraph.text = "Welcome to intelia ML Spez Demo"
+	f_paragraph.text = f"Generated at {current_timestamp}."
+	doc.add_paragraph(text)
+	doc_path = "/tmp/"+file_name
+	doc.save(doc_path)
+	upload_success = upload_file(file_name,folder_id,doc_path)
+	return upload_success
+
 def save_job(job_details,file_name,folder_id):
 	file_name = file_name+".docx"
-	current_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+	current_timestamp = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 	doc = Document()
 	section = doc.sections[0]
 	header = section.header
@@ -247,14 +291,31 @@ def get_sentences(text):
 	return_text = ('\n').join(return_sentences)
 	return return_text
 
-def get_txt(path):
-    try:
-        text = textract.process(path)
-        text = text.decode("utf8")
-        return text
-    except Exception as e:
-        print(e.message)
-        return None
+def get_txt_pdf(path):
+	try:
+		text = textract.process(path)
+		text = text.decode("utf8")
+		return text
+	except Exception as e:
+		if hasattr(e, 'message'):
+			print('Error: ' + e.message)
+		else:
+			print('Error: ' + str(e))
+		return None
+
+def get_txt_docx(path):
+	try:
+		doc = Document(path)
+		text = []
+		for paragraph in doc.paragraphs:
+			text.append(paragraph.text)
+		return '\n'.join(text)
+	except Exception as e:
+		if hasattr(e, 'message'):
+			print('Error: ' + e.message)
+		else:
+			print('Error: ' + str(e))
+		return None
 
 def download_file(folder_id,file_name):
 	try:
@@ -567,8 +628,10 @@ def webhook(request):
 						file_name = request_json["text"][10:]
 						resume_folder_id = session_parameters["resume_folder_id"]
 						file_path = download_file(resume_folder_id, file_name)
-						if file_path:
-							text = get_txt(file_path)
+						if file_path and file_path.endswith(".docx"):
+							text = get_txt_docx(file_path)
+						if file_path and file_path.endswith(".pdf"):
+							text = get_txt_pdf(file_path)
 						if text:
 							content = get_sentences(text)
 							token_count = get_token_count(content,"textembedding-gecko")
@@ -747,6 +810,59 @@ def webhook(request):
 							}
 						}
 				return json_response
+			if tag == "create_coverletter":
+				matches_folder_id = session_parameters["matches_folder_id"]
+				resume_folder_id = session_parameters["resume_folder_id"]
+				cl_folder_id = session_parameters["cl_folder_id"]
+				cl_folder_link = session_parameters["cl_folder_link"]
+
+				for parameter in page_parameters:
+					if parameter["displayName"] == "resume":
+						resume_name = parameter["value"]
+						resume_name = resume_name[10:]
+					if parameter["displayName"] == "job":
+						job_name = parameter["value"]
+						job_name = job_name[10:]
+
+				resume_path = download_file(resume_folder_id, resume_name)
+				if resume_path and resume_path.endswith(".docx"):
+					resume_text = get_txt_docx(resume_path)
+				if resume_path and resume_path.endswith(".pdf"):
+					resume_text = get_txt_pdf(resume_path)
+
+				job_path = download_file(matches_folder_id, job_name)
+				if job_path and job_path.endswith(".docx"):
+					job_text = get_txt_docx(job_path)
+				if job_path and job_path.endswith(".pdf"):
+					job_text = get_txt_pdf(job_path)
+
+				cl_text = generate_cover_letter(resume_text,job_text)
+				cl_file_name = job_name + "-" + resume_name
+				upload_success = save_cl(cl_text,cl_file_name,cl_folder_id)
+				if upload_success:
+					html =  f'''
+					<p>The cover letter for {job_name} has been saved to Google Drive.</p>
+					<p><a href="{cl_folder_link}" target="_blank">Access Link</a></p>
+					'''
+					json_response = {
+							'fulfillment_response': {
+								'messages': [
+									{
+										'payload': {
+											'richContent': [
+												[
+													{
+														"type": "html",
+														"html": html
+													}
+												]
+											]
+										}
+									}
+								]
+							}
+						}
+					return json_response
 			if tag == "delete_folders":
 				session_folder_id = session_parameters["session_folder_id"]
 				folders_deleted = delete_folders(session_folder_id)
