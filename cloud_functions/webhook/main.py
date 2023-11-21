@@ -86,7 +86,7 @@ def save_job(job_details,file_name,folder_id):
 	doc.add_heading('Job Description', level=4)
 	doc.add_paragraph(job_details["description"])
 
-	doc_path = "/tmp/"+file_name
+	doc_path = "/tmp/"+file_name+".docx"
 	doc.save(doc_path)
 	upload_success = upload_file(file_name,folder_id,doc_path)
 	return upload_success
