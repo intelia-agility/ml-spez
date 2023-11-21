@@ -44,6 +44,7 @@ def upload_file(file_name,folder_id,local_path):
 		return None
 
 def save_job(job_details,file_name,folder_id):
+	file_name = file_name+".docx"
 	current_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 	doc = Document()
 	section = doc.sections[0]
@@ -86,7 +87,7 @@ def save_job(job_details,file_name,folder_id):
 	doc.add_heading('Job Description', level=4)
 	doc.add_paragraph(job_details["description"])
 
-	doc_path = "/tmp/"+file_name+".docx"
+	doc_path = "/tmp/"+file_name
 	doc.save(doc_path)
 	upload_success = upload_file(file_name,folder_id,doc_path)
 	return upload_success
