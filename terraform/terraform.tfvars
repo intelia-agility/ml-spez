@@ -72,7 +72,7 @@ buckets = [{
   location    = "us-central1"
 }, {
   bucket_name = "data-store"
-  location    = "us"
+  location    = "us-central1"
 }]
 service_account = "ml-spez@ml-spez-ccai.iam.gserviceaccount.com"
 repo            = "projects/ml-spez-ccai/locations/australia-southeast1/connections/ml_spez_repo_connection/repositories/intelia-agility-ml-spez"
