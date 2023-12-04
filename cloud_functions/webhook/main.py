@@ -687,9 +687,9 @@ def webhook(request):
 								chunk_embeddings = []
 								chunk_lengths = []
 								for chunk in chunks:
-									vector = get_text_embedding(chunk.chunk_content)
+									vector = get_text_embedding(chunk["chunk_content"])
 									chunk_embeddings.append(vector)
-									chunk_lengths.append(chunk.chunk_size)
+									chunk_lengths.append(chunk["chunk_size"])
 								vector = get_weighted_embeddings(chunk_embeddings,chunk_lengths)
 
 							matches = get_matches(vector)
