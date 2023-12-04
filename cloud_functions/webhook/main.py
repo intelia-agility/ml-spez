@@ -272,7 +272,6 @@ def get_text_embedding(text) -> list:
     embeddings = model.get_embeddings([text])
     for embedding in embeddings:
         vector = embedding.values
-        print(f"Length of Embedding Vector: {len(vector)}")
     return vector
 
 def get_token_count(content,model):
