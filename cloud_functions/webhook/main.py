@@ -20,6 +20,49 @@ from vertexai.preview.language_models import TextEmbeddingModel
 from vertexai.preview.language_models import TextGenerationModel
 from docx import Document
 
+def get_weighted_embeddings(chunk_embeddings, chunk_lens):
+
+    weights_sum = sum(chunk_lens)
+
+    result = [sum(arr[i] * chunk_lens[k] / weights_sum for k, arr in enumerate(chunk_embeddings)) for i in range(len(chunk_embeddings[0]))]
+
+    return result
+
+def split_input(input_string, max_chunk_size):
+    chunks = []
+
+    if len(input_string) > max_chunk_size:
+        while len(input_string) > 0:
+            # Find the last period (.) within the maximum chunk size
+            last_period_index = input_string.rfind('.', 0, max_chunk_size)
+
+            if last_period_index <= 0 or last_period_index > max_chunk_size:
+                # If no period is found within the chunk size, split at the chunk size
+                last_period_index = max_chunk_size
+
+            # Extract the chunk
+            chunk = input_string[:last_period_index + 1]
+
+            # Remove the extracted chunk from the input
+            input_string = input_string[last_period_index + 1:]
+
+            # Trim leading and trailing whitespace
+            chunk = chunk.strip()
+
+            # Push the chunk to the result array
+            chunks.append({
+                "chunk_content": chunk,
+                "chunk_size": len(chunk)
+            })
+
+    else:
+        chunks = [{
+            "chunk_content": input_string,
+            "chunk_size": len(input_string)
+        }]
+
+    return chunks
+
 def generate_cover_letter(resume_text,job_text):
 	try:
 		vertexai.init(project="ml-spez-ccai", location="us-central1")
@@ -638,62 +681,74 @@ def webhook(request):
 							token_count = get_token_count(content,"textembedding-gecko")
 							if token_count and token_count<3072:
 								vector = get_text_embedding(text)
-								matches = get_matches(vector)
-								job_details = get_job_details(matches)
-								options = []
-								text = ''
-								for job in job_details:
-									match_percent = job['match_percent']
-									option_text = f"Export: {job['title']} id:{job['job_id']}"
-									text = f"Profile Match: {match_percent}%"
-									if job['formatted_work_type']:
-										text = text + f", Work Type: {job['formatted_work_type']}"
-									if job['min_salary']:
-										text = text + f", Minimum Salary: {job['min_salary']}"
-									if job['max_salary']:
-										text = text + f", Maximum Salary: {job['max_salary']}"
-									if job['pay_period']:
-										text = text + f", Pay Period: {job['pay_period']}"
+							else:
+								print("input too big")
+								chunks = split_input(content,10000)
+								chunk_embeddings = []
+								chunk_lengths = []
+								for chunk in chunks:
+									vector = get_text_embedding(chunk.chunk_content)
+									chunk_embeddings.append(vector)
+									chunk_lengths.append(chunk.chunk_size)
+								vector = get_weighted_embeddings(chunk_embeddings,chunk_lengths)
 
-									options.append(
-										{
-											"type": "accordion",
-											"title": job["title"],
-											"subtitle": job["location"],
-											"text": text
-										})
-									options.append({
-											"type": "chips",
-											"options": [
-												{
-												"text": option_text
-												}
-											]
-										})
-								json_response = {
-									"page_info": {
-												"form_info": {
-													"parameter_info": [
-														{
-															"displayName": "results_displayed",
-															"required": False,
-															"state": "VALID",
-															"value": True,
-														},
-													],
-												},
-											},
-									'fulfillment_response': {
-										'messages': [
-											{"text": {"text": ["Here are a few matches, please click on 'Export' to save the detailed descriptions."]}},
+							matches = get_matches(vector)
+							job_details = get_job_details(matches)
+							options = []
+							text = ''
+							for job in job_details:
+								match_percent = job['match_percent']
+								option_text = f"Export: {job['title']} id:{job['job_id']}"
+								text = f"Profile Match: {match_percent}%"
+								if job['formatted_work_type']:
+									text = text + f", Work Type: {job['formatted_work_type']}"
+								if job['min_salary']:
+									text = text + f", Minimum Salary: {job['min_salary']}"
+								if job['max_salary']:
+									text = text + f", Maximum Salary: {job['max_salary']}"
+								if job['pay_period']:
+									text = text + f", Pay Period: {job['pay_period']}"
+
+								options.append(
+									{
+										"type": "accordion",
+										"title": job["title"],
+										"subtitle": job["location"],
+										"text": text
+									})
+								options.append({
+										"type": "chips",
+										"options": [
 											{
-												'payload': {
-													'richContent': [options]
-												}
+											"text": option_text
 											}
 										]
-									}
+									})
+							json_response = {
+								"page_info": {
+											"form_info": {
+												"parameter_info": [
+													{
+														"displayName": "results_displayed",
+														"required": False,
+														"state": "VALID",
+														"value": True,
+													},
+												],
+											},
+										},
+								'fulfillment_response': {
+									'messages': [
+										{"text": {"text": ["Here are a few matches, please click on 'Export' to save the detailed descriptions."]}},
+										{
+											'payload': {
+												'richContent': [options]
+											}
+										}
+									]
 								}
+							}
+
 				return json_response
 			if tag == "job_export":
 				job_id = request_json["text"].split("id:")[1]
