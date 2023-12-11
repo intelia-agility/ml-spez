@@ -127,12 +127,9 @@ def generate_cover_letter(resume_text: str, job_text: str) -> Optional[str]:
         Use relevant information from the candidate's resume to generate the letter,
         do not add fictional information."""
 
-        print("job_text: ", job_text)
-
         # Generate the cover letter using the text generation model
         response = model.predict(prompt, **parameters)
 
-        print(f"Response from Model: {response.text}")
         return response.text
 
     except Exception as e:
@@ -575,10 +572,8 @@ def get_token_count(content: str, model: str) -> Optional[int]:
 
         if response.status_code == 200:
             response_json = response.json()
-            print('Response content:', response_json)
             return int(response_json["totalTokens"])
         else:
-            print(response)
             print(f'POST request failed with status code {response.status_code}')
             return None
 
@@ -651,8 +646,6 @@ def get_sentences(text: str) -> Optional[str]:
 
             if string_sentence.strip() != "":
                 return_sentences.append(string_sentence)
-
-        print('Total number of sentences: ', len(return_sentences))
 
         # Join the sentences into a single string with newline separators
         return_text = '\n'.join(return_sentences)
@@ -760,7 +753,6 @@ def download_file(folder_id: str, file_name: str) -> Optional[str]:
             while done is False:
                 _, done = downloader.next_chunk()
 
-        print(f"File downloaded to: {file_path}")
         return file_path
 
     except HttpError as error:
