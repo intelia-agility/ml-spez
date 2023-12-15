@@ -1,4 +1,4 @@
-# intelia ML SPecialization Demo#3: Vector Match Job Search Conversational AI Agent
+# intelia ML Specialization Demo#3: Vector Match Job Search Conversational AI Agent
 
 ## Description
 
