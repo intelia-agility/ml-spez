@@ -5,7 +5,7 @@
 This project builds a conversational AI agent powered by a data processing pipeline that analyzes job postings from Kaggle. The system leverages natural language processing and vector search to answer user queries about available jobs.
 
 ## Architecture
-![System Architecture]('architecture.png')
+![System Architecture](architecture.png)
 ### Data Source:
 
 - A dataset of job postings from Kaggle.
