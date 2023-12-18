@@ -201,7 +201,19 @@ Table: ml-spez-ccai.processed.weighted_embeddings
 ## 3.3.3 Whitepaper / Blog
 
 ### Architecture
-![System Architecture](architecture.png)
+![System Architecture](images/architecture.png)
+
+### User Interface
+The user interacts with the system via Dialogflow.
+
+#### Default Start Flow
+![Default Start Flow](images/default-start-flow.png)
+
+#### Job Search Upload Flow
+![Job Search Upload Flow](images/job-search-upload-flow.png)
+
+#### Matching Jobs Flow
+![Matching Jobs Flow](images/matching-jobs-flow.png)
 
 ### 3.3.3.1 Business Goal and Machine Learning Solution
 
