@@ -206,14 +206,47 @@ Table: ml-spez-ccai.processed.weighted_embeddings
 ### User Interface
 The user interacts with the system via Dialogflow.
 
-#### Default Start Flow
+## Default Start Flow
 ![Default Start Flow](images/default-start-flow.png)
 
-#### Job Search Upload Flow
+1. On initial contact, the webhook cloud function creates a folder in Google Drive for the particular user based on the `session_id`, which is unique per Dialogflow session.
+2. Within the folder, it also creates 3 sub-folders:
+    1. Resumes
+    2. Matching Jobs
+    3. Cover Letters
+   Shareable links to each of these folders are stored as session parameters to be accessed throughout the session.
+3. Once the user shows intent to search for a Job and indicates that they have a resume, the flow moves to the Job Search Upload Flow.
+
+## Job Search Upload Flow
 ![Job Search Upload Flow](images/job-search-upload-flow.png)
 
-#### Matching Jobs Flow
+1. The user is given the shareable link to the Resumes folder and is prompted to upload their resume to it. The system is designed to accept `.docx` and `.pdf` file extensions.
+2. Once the user has indicated that they have uploaded their resume, the webhook function:
+    1. Processes the text content in the uploaded files
+    2. Extracts the sentences from the text content
+    3. Checks if the content exceeds the `textembedding-gecko` token limit (3072 tokens). If the content exceeds the limit, it splits the content into smaller chunks.
+    4. Generates embeddings for the content using `textembedding-gecko` and if applicable, combines them using their content lengths as weights.
+    5. It then calls the Vertex Search Deployed Index with the embeddings to retrieve a list of matching jobs in the order of descending match accuracy.
+3. It then transitions to the Matching Jobs Flow.
+
+## Matching Jobs Flow
 ![Matching Jobs Flow](images/matching-jobs-flow.png)
+
+1. The user is shown a list of jobs and is given the option to export the complete details of any job that they are interested in.
+2. Once the user decides to export a job, the webhook function:
+    1. Gets the job id of the selected job
+    2. Queries BigQuery to find all the details of the particular job in the `job_postings` table such as description, salary, location, etc
+    3. Creates a word document with all the details of the job
+    4. Uploads the word document to the Matching Jobs folder
+3. The user is given the shareable link to the Matching Jobs folder is given the option to generate a cover letter for the matching job
+4. If the user decides to generate a cover letter, the user is asked to select the resume they want to use as well as the job from the matching jobs folder
+5. Once the details are confirmed, the webhook function:
+    1. Retrieves the text content from the selected resume and matching job description
+    2. Creates a prompt for text-bison that includes the user's details and the job requirements and asks it to generate a cover letter
+    3. Writes the cover letter content to a word document in the Cover letters folder
+6. The user is given the shareable link to the Cover Letters folder where they can view and download the generated document
+
+**At any point of time in the user journey, if the user wishes to delete any data they have shared, they can indicate it through natural language which triggers an intent that makes the webhook delete all the folders generated.**
 
 ### 3.3.3.1 Business Goal and Machine Learning Solution
 
