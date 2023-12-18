@@ -608,7 +608,7 @@ def upload_csv(cloud_event: dict) -> str:
 
 **BigQuery (Raw Data):** Raw data from Kaggle resides in BigQuery tables. `ml-spez-ccai.linkedin_kaggle`\
 **BigQuery (job postings table):** This table stores details extracted from the raw data about posted jobs.`ml-spez-ccai.linkedin_kaggle.job_postings`\
-**Cloud Function (Triggered by HTTP request):** Another cloud function, another callable API, is triggered by an HTTP request in one of four modes:\
+**Cloud Function (Triggered by HTTP request):** Another cloud function, another callable API, is triggered by an HTTP request in one of four modes:
 - **"generate_embeddings":** This mode transforms job descriptions into chunks, generates embeddings for them using Vertex AI Batch Embeddings, and stores the results in BigQuery.
 - **"export_embeddings":** This mode combines the embeddings based on the content length and exports them in NDJSON format to a GCS bucket.
 - **"create_index":** This mode creates a Vector Search index based on the stored embeddings.
