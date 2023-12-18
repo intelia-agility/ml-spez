@@ -784,7 +784,7 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
 - **Created**: 7 Nov 2023, 23:57:57
 - **Description**: This is the Vector Search deployed index that can be used find the top nearest neighbours.
 
-### 3.3.4.2 Callable library/ application
+### 3.3.4.2 Callable Library/Application
 
 #### Sample Queries
 
