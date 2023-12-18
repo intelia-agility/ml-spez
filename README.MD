@@ -560,9 +560,9 @@ The data flows from its source on Kaggle through various processing steps in Goo
 
 #### Data Source and Ingestion:
 
-Kaggle: Data originates from a job posting dataset on Kaggle.
-Landing Bucket: Data is uploaded to a temporary bucket in GCP (GCS bucket).
-Cloud Function (Triggered by upload): This function, acting as the callable API, is triggered when new data is uploaded. It reads the CSV files and writes them, without transformation, to BigQuery tables.
+**Kaggle:** Data originates from a job posting dataset on [Kaggle](https://www.kaggle.com/datasets/arshkon/linkedin-job-postings/versions/8).\
+**Landing Bucket:** Data is uploaded to a temporary bucket in GCP (GCS bucket) `csv-landing-ml-spez-ccai`.\
+**Cloud Function (Triggered by upload):** This function, acting as the callable API, is triggered when new data is uploaded. It reads the CSV files and writes them, without transformation, to BigQuery tables.
 
 ```python
 # Triggered by a change in a storage bucket.
@@ -606,13 +606,13 @@ def upload_csv(cloud_event: dict) -> str:
 ```
 #### Data Transformation and Embeddings:
 
-BigQuery (Raw Data): Raw data from Kaggle resides in BigQuery tables.\
-BigQuery (job postings table): This table stores details extracted from the raw data about posted jobs.\
-Cloud Function (Triggered by HTTP request): Another cloud function, another callable API, is triggered by an HTTP request in one of four modes:\
-- "generate_embeddings": This mode transforms job descriptions into chunks, generates embeddings for them using Vertex AI Batch Embeddings, and stores the results in BigQuery.
-- "export_embeddings": This mode combines the embeddings based on the content length and exports them in NDJSON format to a GCS bucket.
-- "create_index": This mode creates a Vector Search index based on the stored embeddings.
-- "deploy_index": This mode deploys the index to the Matching Engine Index Endpoint.
+**BigQuery (Raw Data):** Raw data from Kaggle resides in BigQuery tables. `ml-spez-ccai.linkedin_kaggle`\
+**BigQuery (job postings table):** This table stores details extracted from the raw data about posted jobs.`ml-spez-ccai.linkedin_kaggle.job_postings`\
+**Cloud Function (Triggered by HTTP request):** Another cloud function, another callable API, is triggered by an HTTP request in one of four modes:\
+- **"generate_embeddings":** This mode transforms job descriptions into chunks, generates embeddings for them using Vertex AI Batch Embeddings, and stores the results in BigQuery.
+- **"export_embeddings":** This mode combines the embeddings based on the content length and exports them in NDJSON format to a GCS bucket.
+- **"create_index":** This mode creates a Vector Search index based on the stored embeddings.
+- **"deploy_index":** This mode deploys the index to the Matching Engine Index Endpoint.
 
 The complete code for this function is available [here](https://github.com/intelia-agility/ml-spez/tree/main/cloud_functions/trans)
 
