@@ -606,13 +606,13 @@ def upload_csv(cloud_event: dict) -> str:
 ```
 #### Data Transformation and Embeddings:
 
-BigQuery (Raw Data): Raw data from Kaggle resides in BigQuery tables.
-BigQuery (job postings table): This table stores details extracted from the raw data about posted jobs.
-Cloud Function (Triggered by HTTP request): Another cloud function, another callable API, is triggered by an HTTP request in one of four modes:
-"generate_embeddings": This mode transforms job descriptions into chunks, generates embeddings for them using Vertex AI Batch Embeddings, and stores the results in BigQuery.
-"export_embeddings": This mode combines the embeddings based on the content length and exports them in NDJSON format to a GCS bucket.
-"create_index": This mode creates a Vector Search index based on the stored embeddings.
-"deploy_index": This mode deploys the index to the Matching Engine Index Endpoint.
+BigQuery (Raw Data): Raw data from Kaggle resides in BigQuery tables.\
+BigQuery (job postings table): This table stores details extracted from the raw data about posted jobs.\
+Cloud Function (Triggered by HTTP request): Another cloud function, another callable API, is triggered by an HTTP request in one of four modes:\
+- "generate_embeddings": This mode transforms job descriptions into chunks, generates embeddings for them using Vertex AI Batch Embeddings, and stores the results in BigQuery.
+- "export_embeddings": This mode combines the embeddings based on the content length and exports them in NDJSON format to a GCS bucket.
+- "create_index": This mode creates a Vector Search index based on the stored embeddings.
+- "deploy_index": This mode deploys the index to the Matching Engine Index Endpoint.
 
 The complete code for this function is available [here](https://github.com/intelia-agility/ml-spez/tree/main/cloud_functions/trans)
 
