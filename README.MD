@@ -206,7 +206,7 @@ Table: ml-spez-ccai.processed.weighted_embeddings
 ### User Interface
 The user interacts with the system via Dialogflow.
 
-## Default Start Flow
+### Default Start Flow
 ![Default Start Flow](images/default-start-flow.png)
 
 1. On initial contact, the webhook cloud function creates a folder in Google Drive for the particular user based on the `session_id`, which is unique per Dialogflow session.
@@ -217,7 +217,7 @@ The user interacts with the system via Dialogflow.
    Shareable links to each of these folders are stored as session parameters to be accessed throughout the session.
 3. Once the user shows intent to search for a Job and indicates that they have a resume, the flow moves to the Job Search Upload Flow.
 
-## Job Search Upload Flow
+### Job Search Upload Flow
 ![Job Search Upload Flow](images/job-search-upload-flow.png)
 
 1. The user is given the shareable link to the Resumes folder and is prompted to upload their resume to it. The system is designed to accept `.docx` and `.pdf` file extensions.
@@ -229,7 +229,7 @@ The user interacts with the system via Dialogflow.
     5. It then calls the Vertex Search Deployed Index with the embeddings to retrieve a list of matching jobs in the order of descending match accuracy.
 3. It then transitions to the Matching Jobs Flow.
 
-## Matching Jobs Flow
+### Matching Jobs Flow
 ![Matching Jobs Flow](images/matching-jobs-flow.png)
 
 1. The user is shown a list of jobs and is given the option to export the complete details of any job that they are interested in.
