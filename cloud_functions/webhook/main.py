@@ -747,6 +747,7 @@ def download_file(folder_id: str, file_name: str) -> Optional[str]:
 
         # Download the file
         request = service.files().get_media(fileId=file_id)
+        file_name_sanitized = file_name.replace("/","-")
         file_path = os.path.join("/tmp/", file_name)
         with open(file_path, 'wb') as file:
             downloader = MediaIoBaseDownload(file, request)
