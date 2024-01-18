@@ -197,7 +197,7 @@ def get_weighted_embeddings() -> bool:
     FROM
         `ml-spez-ccai.processed.embeddings-2024`
     WHERE
-        content != ""
+        content != "" AND predictions IS NOT null
     GROUP BY
         job_id;
     '''
