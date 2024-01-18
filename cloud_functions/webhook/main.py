@@ -555,7 +555,7 @@ def get_token_count(content: str, model: str) -> Optional[int]:
         request_body = json.dumps(body)
 
         # Construct the endpoint URL
-        endpoint = f"https://us-central1-aiplatform.googleapis.com/v1beta1/projects/ml-spez-ccai/locations/us-central1/publishers/google/models/{model}:countTokens"
+        endpoint = f"https://us-central1-aiplatform.googleapis.com/v1/projects/ml-spez-ccai/locations/us-central1/publishers/google/models/{model}:countTokens"
 
         # Get the access token
         access_token = get_default_token()
