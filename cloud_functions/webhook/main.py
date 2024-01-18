@@ -462,6 +462,7 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
         Dict[str, float]: A dictionary mapping job IDs to match distances.
     """
     try:
+        print("in get matches")
         # Retrieve match threshold from environment variable
         match_threshold = float(os.environ.get("MATCH_THRESHOLD"))
 
@@ -485,7 +486,7 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
             for id, neighbor in enumerate(response[0]):
                 if neighbor.distance >= match_threshold:
                     matches[neighbor.id] = neighbor.distance
-
+        print("matches are: ", matches)
         return matches
 
     except Exception as e:
@@ -572,6 +573,7 @@ def get_token_count(content: str, model: str) -> Optional[int]:
 
         if response.status_code == 200:
             response_json = response.json()
+            print("token count: ", int(response_json["totalTokens"]))
             return int(response_json["totalTokens"])
         else:
             print(f'POST request failed with status code {response.status_code}')
