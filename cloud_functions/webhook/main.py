@@ -482,9 +482,10 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
 
         if len(response[0]) > 0:
             for neighbor in response[0]:
+                print("distance: ", neighbor.distance)
+                print("id: ", neighbor.id)
                 if neighbor.distance >= match_threshold:
                     matches[neighbor.id] = neighbor.distance
-
         return matches
 
     except Exception as e:
@@ -1140,61 +1141,82 @@ def webhook(request: Request) -> jsonify:
 								vector = get_weighted_embeddings(chunk_embeddings,chunk_lengths)
 
 							matches = get_matches(vector)
-							job_details = get_job_details(matches)
-							options = []
-							text = ''
-							for job in job_details:
-								match_percent = job['match_percent']
-								option_text = f"Export: {job['title']} id:{job['job_id']}"
-								text = f"Profile Match: {match_percent}%"
-								if job['formatted_work_type']:
-									text = text + f", Work Type: {job['formatted_work_type']}"
-								if job['min_salary']:
-									text = text + f", Minimum Salary: {job['min_salary']}"
-								if job['max_salary']:
-									text = text + f", Maximum Salary: {job['max_salary']}"
-								if job['pay_period']:
-									text = text + f", Pay Period: {job['pay_period']}"
+							if len(matches)>0:
+								job_details = get_job_details(matches)
+								options = []
+								text = ''
+								for job in job_details:
+									match_percent = job['match_percent']
+									option_text = f"Export: {job['title']} id:{job['job_id']}"
+									text = f"Profile Match: {match_percent}%"
+									if job['formatted_work_type']:
+										text = text + f", Work Type: {job['formatted_work_type']}"
+									if job['min_salary']:
+										text = text + f", Minimum Salary: {job['min_salary']}"
+									if job['max_salary']:
+										text = text + f", Maximum Salary: {job['max_salary']}"
+									if job['pay_period']:
+										text = text + f", Pay Period: {job['pay_period']}"
 
-								options.append(
-									{
-										"type": "accordion",
-										"title": job["title"],
-										"subtitle": job["location"],
-										"text": text
-									})
-								options.append({
-										"type": "chips",
-										"options": [
+									options.append(
+										{
+											"type": "accordion",
+											"title": job["title"],
+											"subtitle": job["location"],
+											"text": text
+										})
+									options.append({
+											"type": "chips",
+											"options": [
+												{
+												"text": option_text
+												}
+											]
+										})
+								json_response = {
+									"page_info": {
+												"form_info": {
+													"parameter_info": [
+														{
+															"displayName": "results_displayed",
+															"required": False,
+															"state": "VALID",
+															"value": True,
+														},
+													],
+												},
+											},
+									'fulfillment_response': {
+										'messages': [
+											{"text": {"text": ["Here are a few matches, please click on 'Export' to save the detailed descriptions."]}},
 											{
-											"text": option_text
+												'payload': {
+													'richContent': [options]
+												}
 											}
 										]
-									})
-							json_response = {
-								"page_info": {
-											"form_info": {
-												"parameter_info": [
-													{
-														"displayName": "results_displayed",
-														"required": False,
-														"state": "VALID",
-														"value": True,
-													},
-												],
-											},
-										},
-								'fulfillment_response': {
-									'messages': [
-										{"text": {"text": ["Here are a few matches, please click on 'Export' to save the detailed descriptions."]}},
-										{
-											'payload': {
-												'richContent': [options]
-											}
-										}
-									]
+									}
 								}
-							}
+							else:
+								json_response = {
+									"page_info": {
+												"form_info": {
+													"parameter_info": [
+														{
+															"displayName": "results_displayed",
+															"required": False,
+															"state": "VALID",
+															"value": True,
+														},
+													],
+												},
+											},
+									'fulfillment_response': {
+										'messages': [
+											{"text": {"text": ["Unfortunatley, I was unable to find any matching jobs in the database. :("]}}
+										]
+									}
+								}
 
 				return jsonify(json_response)
 			if tag == "job_export":
