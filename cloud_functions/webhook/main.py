@@ -37,7 +37,7 @@ def get_weighted_embeddings(chunk_embeddings: List[List[float]], chunk_lens: Lis
     """
     # Calculate the sum of weights (chunk lengths)
     weights_sum = sum(chunk_lens)
-
+    print("In weighted embeddings")
     # Calculate the weighted average for each element in the embeddings
     result = [
         sum(arr[i] * chunk_lens[k] / weights_sum for k, arr in enumerate(chunk_embeddings))
@@ -89,7 +89,7 @@ def split_input(input_string: str, max_chunk_size: int) -> List[Dict[str, Union[
             "chunk_content": input_string,
             "chunk_size": len(input_string)
         }]
-
+    print("chunks are: ", chunks)
     return chunks
 
 def generate_cover_letter(resume_text: str, job_text: str) -> Optional[str]:
