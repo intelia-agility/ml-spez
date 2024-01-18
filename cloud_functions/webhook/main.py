@@ -487,8 +487,7 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
                 print("id: ", neighbor.id)
                 if neighbor.distance >= match_threshold:
                     matches[neighbor.id] = neighbor.distance
-            sorted_matches = sorted(matches.items(), key=operator.itemgetter(1))
-        return sorted_matches
+        return matches
 
     except Exception as e:
         if hasattr(e, 'message'):
