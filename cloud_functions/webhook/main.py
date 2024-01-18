@@ -462,7 +462,7 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
         Dict[str, float]: A dictionary mapping job IDs to match distances.
     """
     try:
-        print("in get matches")
+        print("in get matches: ",vector)
         # Retrieve match threshold from environment variable
         match_threshold = float(os.environ.get("MATCH_THRESHOLD"))
 
@@ -538,6 +538,7 @@ def get_token_count(content: str, model: str) -> Optional[int]:
         Optional[int]: The total token count if successful, None if an error occurs.
     """
     try:
+        print("in token count")
         if model == "textembedding-gecko":
             body = {
                 "instances": [
