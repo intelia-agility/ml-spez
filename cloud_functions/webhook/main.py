@@ -485,8 +485,8 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
 
         if len(response) > 0:
             for neighbor in response:
-                if neighbor.distance >= match_threshold:
-                    matches[neighbor.id] = neighbor.distance
+                if neighbor[1] >= match_threshold:
+                    matches[neighbor[0]] = neighbor[1]
         print("matches are: ", matches)
         return matches
 
