@@ -476,17 +476,17 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
         response = my_index_endpoint.find_neighbors(
             deployed_index_id="job_posting_deployed_index",
             queries=[vector],
-            num_neighbors=2
+            num_neighbors=5
         )
         print("response type: ", type(response))
         print("response: ", response)
         # Extract matches from the response
         matches = {}
 
-        if len(response) > 0:
-            for neighbor in response:
-                if neighbor[1] >= match_threshold:
-                    matches[neighbor[0]] = neighbor[1]
+        if len(response[0]) > 0:
+            for neighbor in response[0]:
+                if neighbor.distance >= match_threshold:
+                    matches[neighbor.id] = neighbor.distance
         print("matches are: ", matches)
         return matches
 
