@@ -16,7 +16,7 @@ import google.auth.transport.requests
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.http import MediaFileUpload
-from google.cloud import aiplatform_v1
+from google.cloud import aiplatform
 import vertexai
 from vertexai.preview.language_models import TextEmbeddingModel
 from vertexai.preview.language_models import TextGenerationModel
@@ -462,43 +462,24 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
         Dict[str, float]: A dictionary mapping job IDs to match distances.
     """
     try:
-        print("in get matches")
+        print("in get matches: ",vector)
         # Retrieve match threshold from environment variable
         match_threshold = float(os.environ.get("MATCH_THRESHOLD"))
 
-        # Set variables for the current deployed index.
-        API_ENDPOINT="1782564241.us-central1-917573008156.vdb.vertexai.goog"
-        INDEX_ENDPOINT="projects/917573008156/locations/us-central1/indexEndpoints/8350381794633187328"
-        DEPLOYED_INDEX_ID="job_posting_deployed_index"
+        # Initialize AI Platform Matching Engine
+        aiplatform.init(project="ml-spez-ccai", location="us-central1")
 
-        # Configure Vector Search client
-        client_options = {
-        "api_endpoint": API_ENDPOINT
-        }
-        vector_search_client = aiplatform_v1.MatchServiceClient(
-        client_options=client_options,
-        )
+        # Create a Matching Engine Index Endpoint
+        my_index_endpoint = aiplatform.MatchingEngineIndexEndpoint(index_endpoint_name='8350381794633187328')
 
-        # Build FindNeighborsRequest object
-        datapoint = aiplatform_v1.IndexDatapoint(
-        feature_vector=vector
+        # Find neighbors using the Matching Engine
+        response = my_index_endpoint.find_neighbors(
+            deployed_index_id="job_posting_deployed_index",
+            queries=[vector],
+            num_neighbors=2
         )
-        query = aiplatform_v1.FindNeighborsRequest.Query(
-        datapoint=datapoint,
-        # The number of nearest neighbors to be retrieved
-        neighbor_count=10
-        )
-        request = aiplatform_v1.FindNeighborsRequest(
-        index_endpoint=INDEX_ENDPOINT,
-        deployed_index_id=DEPLOYED_INDEX_ID,
-        # Request can have multiple queries
-        queries=[query],
-        return_full_datapoint=False,
-        )
-
-        # Execute the request
-        response = vector_search_client.find_neighbors(request)
-        print("vector search response: ", response)
+        print("response type: ", type(response))
+        print("response: ", response)
         # Extract matches from the response
         matches = {}
 
