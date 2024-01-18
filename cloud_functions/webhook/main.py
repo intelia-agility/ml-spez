@@ -498,7 +498,7 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
 
         # Execute the request
         response = vector_search_client.find_neighbors(request)
-
+        print("vector search response: ", response)
         # Extract matches from the response
         matches = {}
 
