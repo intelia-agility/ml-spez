@@ -21,7 +21,7 @@ def create_index(project_number: str) -> None:
     """
     endpoint = f"https://us-central1-aiplatform.googleapis.com/v1/projects/{project_number}/locations/us-central1/indexes"
     request_body = {
-        "display_name": "job_posting_index",
+        "display_name": "job_posting_index_2024",
         "metadata": {
             "contentsDeltaUri": "gs://" + os.environ["DATASET_BUCKET"],
             "config": {
@@ -68,7 +68,7 @@ def deploy_index(project_number: str, index_id: str) -> None:
     """
     # Create `IndexEndpoint`
     my_index_endpoint = aiplatform.MatchingEngineIndexEndpoint.create(
-        display_name="job_posting_index_endpoint",
+        display_name="job_posting_index_endpoint_2024",
         public_endpoint_enabled=True
     )
 
@@ -77,7 +77,7 @@ def deploy_index(project_number: str, index_id: str) -> None:
     my_index = aiplatform.MatchingEngineIndex(index_name=index_path)
 
     # Deploy the Index to the Index Endpoint
-    DEPLOYED_INDEX_ID = "job_posting_deployed_index"
+    DEPLOYED_INDEX_ID = "job_posting_deployed_index_2024"
     my_index_endpoint.deploy_index(
         index=my_index,
         deployed_index_id=DEPLOYED_INDEX_ID,
@@ -127,13 +127,13 @@ def export_to_gcs() -> None:
     dataset_bucket = os.environ["DATASET_BUCKET"]
 
     # Specify the destination URI for the exported data
-    destination_uri = "gs://{}/{}".format(dataset_bucket, "embeddings.json")
+    destination_uri = "gs://{}/{}".format(dataset_bucket, "embeddings-2024.json")
 
     # Define the dataset reference
     dataset_ref = bigquery.DatasetReference("ml-spez-ccai", "processed")
 
     # Define the table reference within the dataset
-    table_ref = dataset_ref.table("weighted_embeddings")
+    table_ref = dataset_ref.table("weighted_embeddings-2024")
 
     # Configure the export job
     job_config = bigquery.job.ExtractJobConfig()
@@ -190,12 +190,12 @@ def get_weighted_embeddings() -> bool:
     LANGUAGE js AS \'''{js_udf}\''';
 
     CREATE OR REPLACE TABLE
-    `ml-spez-ccai.processed.weighted_embeddings` AS
+    `ml-spez-ccai.processed.weighted_embeddings-2024` AS
     SELECT
         job_id AS id,
         weighted_embeddings(ARRAY_AGG(predictions[0].embeddings.values), ARRAY_AGG(chunk_size), ARRAY_AGG(is_split)) AS embedding
     FROM
-        `ml-spez-ccai.processed.embeddings`
+        `ml-spez-ccai.processed.embeddings-2024`
     WHERE
         content != ""
     GROUP BY
@@ -342,13 +342,13 @@ def batch_embeddings() -> None:
         "inputConfig": {
             "instancesFormat": "bigquery",
             "bigquerySource": {
-                "inputUri": "bq://ml-spez-ccai.processed.chonks"
+                "inputUri": "bq://ml-spez-ccai.processed.chonks-2024"
             }
         },
         "outputConfig": {
             "predictionsFormat": "bigquery",
             "bigqueryDestination": {
-                "outputUri": "bq://ml-spez-ccai.processed.embeddings"
+                "outputUri": "bq://ml-spez-ccai.processed.embeddings-2024"
             }
         }
     }
