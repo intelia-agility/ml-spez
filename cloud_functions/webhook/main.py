@@ -470,11 +470,11 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
         aiplatform.init(project="ml-spez-ccai", location="us-central1")
 
         # Create a Matching Engine Index Endpoint
-        my_index_endpoint = aiplatform.MatchingEngineIndexEndpoint(index_endpoint_name='8350381794633187328')
+        my_index_endpoint = aiplatform.MatchingEngineIndexEndpoint(index_endpoint_name='job_posting_index_endpoint')
 
         # Find neighbors using the Matching Engine
         response = my_index_endpoint.find_neighbors(
-            deployed_index_id="job_posting_deployed_index",
+            deployed_index_id="8350381794633187328",
             queries=[vector],
             num_neighbors=10
         )
