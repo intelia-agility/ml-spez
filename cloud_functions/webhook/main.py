@@ -3,6 +3,7 @@ import os
 import re
 import uuid
 import json
+import operator
 import textract
 import en_core_web_sm
 import requests
@@ -391,10 +392,10 @@ def get_job_details(matches: Dict[str, float]) -> Optional[List[Dict[str, str]]]
     Retrieve job details from BigQuery based on a dictionary of job matches.
 
     Args:
-        matches (Dict[str, float]): A dictionary mapping job IDs to match percentages.
+        matches (Dict[str, float]): A dictionary mapping job IDs to match distances.
 
     Returns:
-        Optional[List[Dict[str, str]]]: A list of dictionaries containing job details, sorted by match percentage,
+        Optional[List[Dict[str, str]]]: A list of dictionaries containing job details, sorted by match distance,
                                          or None if an error occurs.
     """
     try:
@@ -433,13 +434,13 @@ def get_job_details(matches: Dict[str, float]) -> Optional[List[Dict[str, str]]]
             result_dict = dict(result)
 
             # Calculate and add match percentage to the result dictionary
-            match_percent = round(float(matches[result_dict["job_id"]]) * 100, 2)
-            result_dict["match_percent"] = match_percent
+            match_distance = round(float(matches[result_dict["job_id"]]), 3)
+            result_dict["match_distance"] = match_distance
 
             result_data.append(result_dict)
 
         # Sort the results by match percentage in descending order
-        sorted_results = sorted(result_data, key=lambda x: x['match_percent'], reverse=True)
+        sorted_results = sorted(result_data, key=lambda x: x['match_distance'])
 
         return sorted_results
 
@@ -486,7 +487,8 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
                 print("id: ", neighbor.id)
                 if neighbor.distance >= match_threshold:
                     matches[neighbor.id] = neighbor.distance
-        return matches
+            sorted_matches = sorted(matches.items(), key=operator.itemgetter(1))
+        return sorted_matches
 
     except Exception as e:
         if hasattr(e, 'message'):
@@ -1146,9 +1148,9 @@ def webhook(request: Request) -> jsonify:
 								options = []
 								text = ''
 								for job in job_details:
-									match_percent = job['match_percent']
+									match_distance = job['match_distance']
 									option_text = f"Export: {job['title']} id:{job['job_id']}"
-									text = f"Profile Match: {match_percent}%"
+									text = f"Profile Match Distance: {match_distance}"
 									if job['formatted_work_type']:
 										text = text + f", Work Type: {job['formatted_work_type']}"
 									if job['min_salary']:
