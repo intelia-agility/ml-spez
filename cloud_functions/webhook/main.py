@@ -37,7 +37,7 @@ def get_weighted_embeddings(chunk_embeddings: List[List[float]], chunk_lens: Lis
     """
     # Calculate the sum of weights (chunk lengths)
     weights_sum = sum(chunk_lens)
-    print("In weighted embeddings")
+
     # Calculate the weighted average for each element in the embeddings
     result = [
         sum(arr[i] * chunk_lens[k] / weights_sum for k, arr in enumerate(chunk_embeddings))
@@ -89,7 +89,7 @@ def split_input(input_string: str, max_chunk_size: int) -> List[Dict[str, Union[
             "chunk_content": input_string,
             "chunk_size": len(input_string)
         }]
-    print("chunks are: ", chunks)
+
     return chunks
 
 def generate_cover_letter(resume_text: str, job_text: str) -> Optional[str]:
@@ -462,7 +462,6 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
         Dict[str, float]: A dictionary mapping job IDs to match distances.
     """
     try:
-        print("in get matches: ",vector)
         # Retrieve match threshold from environment variable
         match_threshold = float(os.environ.get("MATCH_THRESHOLD"))
 
@@ -478,8 +477,6 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
             queries=[vector],
             num_neighbors=5
         )
-        print("response type: ", type(response))
-        print("response: ", response)
         # Extract matches from the response
         matches = {}
 
@@ -487,7 +484,7 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
             for neighbor in response[0]:
                 if neighbor.distance >= match_threshold:
                     matches[neighbor.id] = neighbor.distance
-        print("matches are: ", matches)
+
         return matches
 
     except Exception as e:
@@ -539,7 +536,6 @@ def get_token_count(content: str, model: str) -> Optional[int]:
         Optional[int]: The total token count if successful, None if an error occurs.
     """
     try:
-        print("in token count")
         if model == "textembedding-gecko":
             body = {
                 "instances": [
@@ -575,7 +571,6 @@ def get_token_count(content: str, model: str) -> Optional[int]:
 
         if response.status_code == 200:
             response_json = response.json()
-            print("token count: ", int(response_json["totalTokens"]))
             return int(response_json["totalTokens"])
         else:
             print(f'POST request failed with status code {response.status_code}')
@@ -1135,7 +1130,6 @@ def webhook(request: Request) -> jsonify:
 							if token_count and token_count<3072:
 								vector = get_text_embedding(text)
 							else:
-								print("input too big")
 								chunks = split_input(content,10000)
 								chunk_embeddings = []
 								chunk_lengths = []
