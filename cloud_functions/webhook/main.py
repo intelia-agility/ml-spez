@@ -236,7 +236,8 @@ def save_cl(text: str, file_name: str, folder_id: str) -> Optional[bool]:
         doc.add_paragraph(text)
 
         # Save the document to a temporary location
-        doc_path = "/tmp/" + file_name
+        file_name_sanitized = file_name.replace("/","-")
+        doc_path = "/tmp/" + file_name_sanitized
         doc.save(doc_path)
 
         # Upload the document to Google Drive
@@ -319,7 +320,8 @@ def save_job(job_details: Dict[str, str], file_name: str, folder_id: str) -> Opt
         doc.add_paragraph(job_details["description"])
 
         # Save the document to a temporary location
-        doc_path = "/tmp/" + file_name
+        file_name_sanitized = file_name.replace("/","-")
+        doc_path = "/tmp/" + file_name_sanitized
         doc.save(doc_path)
 
         # Upload the document to Google Drive
@@ -476,7 +478,7 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
         response = my_index_endpoint.find_neighbors(
             deployed_index_id="job_posting_deployed_index",
             queries=[vector],
-            num_neighbors=5
+            num_neighbors=10
         )
         # Extract matches from the response
         matches = {}
@@ -748,7 +750,7 @@ def download_file(folder_id: str, file_name: str) -> Optional[str]:
         # Download the file
         request = service.files().get_media(fileId=file_id)
         file_name_sanitized = file_name.replace("/","-")
-        file_path = os.path.join("/tmp/", file_name)
+        file_path = os.path.join("/tmp/", file_name_sanitized)
         with open(file_path, 'wb') as file:
             downloader = MediaIoBaseDownload(file, request)
             done = False
