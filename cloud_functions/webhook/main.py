@@ -105,6 +105,8 @@ def generate_cover_letter(resume_text: str, job_text: str) -> Optional[str]:
         Optional[str]: The generated cover letter text or None if an error occurs.
     """
     try:
+        print("resume: ", resume_text)
+        print("job: ", job_text)
         # Initialize Vertex AI
         vertexai.init(project="ml-spez-ccai", location="us-central1")
 
