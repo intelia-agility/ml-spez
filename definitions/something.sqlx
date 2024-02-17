@@ -7,4 +7,4 @@ config {
 
  }
 
-SELECT 69 AS column1, 96 AS column2
+SELECT "hehr" AS column1, 96 AS column2
