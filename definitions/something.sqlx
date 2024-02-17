@@ -1,0 +1,10 @@
+config {
+    type: "table",
+    columns: {
+        "column1": "This is the first column",
+        "column2": "This is the second column"
+    }
+
+ }
+
+SELECT 69 AS column1, 96 AS column2

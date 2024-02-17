@@ -1,0 +1,17 @@
+[
+    {
+      "name": "job_id",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "inferred",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "type",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    }
+]

@@ -1,0 +1,12 @@
+[
+    {
+      "name": "company_id",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "speciality",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    }
+]

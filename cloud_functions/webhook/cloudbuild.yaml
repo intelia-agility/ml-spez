@@ -1,0 +1,21 @@
+steps:
+- id: 'deploy cloud function webhook'
+  name: 'gcr.io/cloud-builders/gcloud'
+  args:
+  - functions
+  - deploy
+  - webhook
+  - --quiet
+  - --gen2
+  - --memory=1GB
+  - --timeout=540
+  - --region=us-central1
+  - --source=cloud_functions/webhook
+  - --entry-point=webhook
+  - --trigger-http
+  - --allow-unauthenticated
+  - --env-vars-file=cloud_functions/webhook/.env.yaml
+  - --runtime=python311
+  - --service-account=ml-spez@ml-spez-ccai.iam.gserviceaccount.com
+options:
+  logging: CLOUD_LOGGING_ONLY

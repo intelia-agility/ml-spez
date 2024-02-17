@@ -1,0 +1,22 @@
+[
+    {
+      "name": "company_id",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "employee_count",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "follower_count",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "time_recorded",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    }
+]

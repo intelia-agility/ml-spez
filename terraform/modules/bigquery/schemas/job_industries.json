@@ -1,0 +1,12 @@
+[
+    {
+      "name": "job_id",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "industry_id",
+      "type": "STRING",
+      "mode": "NULLABLE"
+    }
+]
