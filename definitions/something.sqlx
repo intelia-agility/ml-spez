@@ -1,4 +1,4 @@
-config{
+config {
     type: "table",
     columns: {
         "column1": "This is the first column",
