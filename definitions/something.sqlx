@@ -6,5 +6,7 @@ config {
     }
 
  }
-
-SELECT "hehr" AS column1, 96 AS column2
+js {
+    const number = 12;
+}
+SELECT "hehr" AS column1, 96 AS column2, ${number} AS const
