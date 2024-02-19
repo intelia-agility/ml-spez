@@ -1,4 +1,4 @@
-const table_names = ["t1", "t2", "t3"];
+const table_names = ["t11", "t12", "t13"];
 table_names.forEach(table_name=>{
     publish(table_name, {
         type: "table",
@@ -6,8 +6,4 @@ table_names.forEach(table_name=>{
     })
     .query(ctx=>`SELECT * FROM ${ctx.ref("second_view")}`);
     assert(`assertion1 ${table_name}`).query(ctx=>`SELECT * FROM ${ctx.ref("second_view")} WHERE test>1`);
-    operate(`operation for ${table_name}`).queries([
-        ctx=>`SELECT * FROM ${ctx.ref("second_view")}`,
-        ctx=>`SELECT * FROM ${ctx.ref("second_view")} WHERE test>1`
-    ]);
 });
