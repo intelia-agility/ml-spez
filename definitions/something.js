@@ -5,5 +5,5 @@ table_names.forEach(table_name=>{
         description: `${table_name} table is a dynamically generated table`
     })
     .query(ctx=>`SELECT * FROM ${ctx.ref("second_view")}`);
-    assert(`assertion1 ${table_name}`).query(ctx=>`SELECT COUNT(*) as count FROM ${ctx.ref("second_view")} WHERE FALSE`);
+    assert(`assertion1 ${table_name}`).query(ctx=>`SELECT * FROM ${ctx.ref("second_view")} WHERE test>1`);
 });
