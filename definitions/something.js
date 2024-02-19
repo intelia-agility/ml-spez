@@ -6,5 +6,5 @@ table_names.forEach(table_name=>{
     })
     .query(ctx=>`SELECT * FROM ${ctx.ref("second_view")}`);
     assert(`assertion1 ${table_name}`).query(ctx=>`SELECT * FROM ${ctx.ref("second_view")} WHERE test>1`);
-    operate(`delete operation ${table_name}`,ctx=>`DELETE from ${table_name} where true`);
+    operate(`delete operation ${table_name}`,ctx=>`DELETE from dataform.${table_name} where true`);
 });
