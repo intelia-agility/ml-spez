@@ -6,4 +6,5 @@ table_names.forEach(table_name=>{
     })
     .query(ctx=>`SELECT * FROM ${ctx.ref("second_view")}`);
     assert(`assertion1 ${table_name}`).query(ctx=>`SELECT * FROM ${ctx.ref("second_view")} WHERE test>1`);
+    operate(`operation for ${table_name}`,[`SELECT * FROM ${ctx.ref("second_view")}`]);
 });
