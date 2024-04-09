@@ -476,7 +476,7 @@ def get_matches(vector: List[float]) -> Dict[str, float]:
 
         # Find neighbors using the Matching Engine
         response = my_index_endpoint.find_neighbors(
-            deployed_index_id="job_posting_deployed_index",
+            deployed_index_id="deployed_index_1712625187579",
             queries=[vector],
             num_neighbors=10
         )
